@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Premium Gaming Platform</title>
+
+    <!-- Icons and Modern Font -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Swiper, Bootstrap & Razorpay -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        /* =========================================
+           1. PREMIUM THEME VARIABLES
+        ========================================= */
+        :root {
+            --bg-base: #09090b; 
+            --bg-surface: rgba(24, 24, 27, 0.65); 
+            --bg-card: #18181b;
+            --text-main: #fafafa; 
+            --text-muted: #a1a1aa;
+            
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-gold: #facc15;
+            
+            --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            --gradient-gold: linear-gradient(135deg, #facc15, #f59e0b);
+            
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        /* =========================================
+           2. GLOBAL RESETS & TYPOGRAPHY
+        ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { font-size: 15px; scroll-behavior: smooth; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-base); 
+            color: var(--text-main); 
+            padding-top: 80px; 
+            padding-bottom: 100px; 
+            min-height: 100vh; 
+            background-image: radial-gradient(circle at top right, rgba(139, 92, 246, 0.1), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.08), transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .text-gradient { background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+
+        /* =========================================
+           3. UI COMPONENTS
+        ========================================= */
+        .main-content { padding: 0 16px; max-width: 500px; margin: 0 auto; } 
+        
+        .section { display: none; opacity: 0; } 
+        .section.active { display: block; animation: fadeSlideUp 0.4s ease forwards; } 
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;} 
+        
+        .glass-card { 
+            background: var(--bg-surface); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; 
+            border: 1px solid var(--border-glass); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        } 
+        
+        .btn-custom { 
+            border-radius: 12px; font-size: 0.95rem; font-weight: 700; padding: 12px 20px; 
+            border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; 
+            transition: all 0.2s; color: white; width: 100%; position: relative; overflow: hidden;
+        } 
+        .btn-primary-gradient { background: var(--gradient-primary); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
+        .btn-primary-gradient:active { transform: scale(0.98); }
+        .btn-outline-custom { background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-main); }
+        .btn-outline-custom:active { background: rgba(255,255,255,0.1); }
+        
+        .form-control { background-color: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); color: white; border-radius: 12px; padding: 12px 16px; font-size: 0.95rem; transition: 0.3s; } 
+        .form-control:focus { background-color: rgba(0,0,0,0.5); border-color: var(--accent-cyan); color: white; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); } 
+        .form-control::placeholder { color: var(--text-muted); } 
+        .form-label { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; } 
+        
+        .list-group-item { background: transparent; color: var(--text-main); border: none; border-bottom: 1px solid var(--border-glass); padding: 16px 12px; font-size: 0.95rem; font-weight: 600; transition: 0.2s; cursor: pointer; } 
+        .list-group-item:hover { background: rgba(255,255,255,0.03); } 
+        .list-group-item:last-child { border-bottom: none; }
+        .list-group-item i:first-child { color: var(--accent-purple); margin-right: 12px; font-size: 1.2rem; }
+
+        .placeholder-glow .placeholder { background: linear-gradient(90deg, #18181b 25%, #27272a 50%, #18181b 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: var(--radius-md); opacity: 1; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* =========================================
+           4. HEADER & BOTTOM NAV
+        ========================================= */
+        .app-header { 
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 500px; height: 65px; 
+            background: rgba(9, 9, 11, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 16px; 
+            z-index: 1000; border-bottom: 1px solid var(--border-glass);
+        } 
+        
+        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden; } 
+        .header-logo { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--accent-cyan); object-fit: cover; } 
+        .header-title { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; flex-direction: column; line-height: 1.2;} 
+        .header-title small { font-size: 0.7rem; color: var(--accent-cyan); font-weight: 700; text-transform: none; letter-spacing: 0; }
+        
+        .header-right { display: flex; flex-direction: row; align-items: center; gap: 12px; flex-shrink: 0; } 
+        .notification-icon { font-size: 1.4rem; color: var(--text-main); position: relative; background: none; border: none; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; } 
+        .notification-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 0.6rem; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 800; } 
+        
+        .wallet-chip { 
+            background: rgba(255,255,255,0.08); color: var(--text-main); padding: 6px 12px; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; border: 1px solid var(--border-glass); cursor: pointer; height: 36px;
+        } 
+        .wallet-chip i { color: var(--accent-cyan); margin-right: 6px; font-size: 1rem; }
+
+        .bottom-nav { 
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); 
+            width: calc(100% - 32px); max-width: 468px; height: 65px; 
+            background: rgba(24, 24, 27, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; justify-content: space-around; align-items: center; 
+            border-radius: var(--radius-xl); border: 1px solid var(--border-glass); 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); z-index: 1000; padding: 0 8px;
+        } 
+        .nav-item { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            color: var(--text-muted); text-decoration: none; padding: 4px; flex: 1;
+            background: none; border: none; cursor: pointer; font-size: 0.7rem; font-weight: 600; 
+            transition: all 0.2s ease;
+        } 
+        .nav-item i { font-size: 1.3rem; margin-bottom: 2px; } 
+        .nav-item.active { color: var(--text-main); } 
+        .nav-item.active i { color: var(--accent-cyan); }
+
+        .nav-item.nav-item-center { 
+            transform: translateY(-20px); background: var(--gradient-primary); color: white; 
+            border-radius: 50%; width: 55px; height: 55px; border: 4px solid var(--bg-base); 
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4); z-index: 1001; flex: none;
+        }
+        .nav-item.nav-item-center i { font-size: 1.6rem; margin: 0; color: white; }
+        .nav-item.nav-item-center.active i { color: white; }
+        .nav-item.nav-item-center span { display: none; }
+
+        /* =========================================
+           5. PAGE SPECIFIC DESIGNS
+        ========================================= */
+        .swiper-container#promotionSliderEl { width: 100%; height: 160px; border-radius: var(--radius-md); margin-bottom: 20px; border: 1px solid var(--border-glass); } 
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md); }
+        
+        .home-nav-icons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .home-nav-item { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-main); font-size: 0.75rem; font-weight: 700; text-decoration: none;}
+        .home-nav-item .icon-wrapper { width: 45px; height: 45px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--accent-cyan); border: 1px solid var(--border-glass); transition: 0.2s; pointer-events: none;}
+        .home-nav-item:active .icon-wrapper { transform: scale(0.95); background: rgba(255,255,255,0.1); }
+
+        .game-card-new { aspect-ratio: 4 / 5; border-radius: var(--radius-md); background-size: cover; background-position: center; position: relative; overflow: hidden; border: 1px solid var(--border-glass); cursor: pointer;}
+        .game-card-new-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%); display: flex; align-items: flex-end; padding: 12px; pointer-events: none;}
+        .game-card-new-overlay span { color: white; font-weight: 800; font-size: 1rem; }
+
+        /* Tournament Details */
+        .tournament-tabs { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: var(--radius-xl); margin-bottom: 20px; border: 1px solid var(--border-glass); } 
+        .tab-item { color: var(--text-muted); background: none; border: none; padding: 10px; font-size: 0.85rem; font-weight: 700; border-radius: var(--radius-xl); flex: 1; text-align: center; } 
+        .tab-item.active { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-glass); box-shadow: 0 2px 10px rgba(0,0,0,0.2);}
+
+        .tournament-card { background: var(--bg-card); border-radius: var(--radius-lg); margin-bottom: 20px; border: 1px solid var(--border-glass); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; }
+        .tournament-banner-image { width: 100%; aspect-ratio: 21/9; object-fit: cover; }
+        .tournament-card-content { padding: 16px; }
+        .tournament-card-tags { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; }
+        .tournament-card-tags span { background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); color: var(--text-main); font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-glass); text-transform: uppercase;}
+        
+        .tournament-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .tournament-card-title { font-size: 1.1rem; font-weight: 800; color: white; text-transform: uppercase; width: 65%; line-height: 1.2;}
+        .tournament-card-timer { background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3); text-transform: uppercase;}
+        
+        .tournament-card-info { display: flex; justify-content: space-between; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 12px; margin-bottom: 16px; border: 1px solid var(--border-glass); } 
+        .info-item { text-align: center; flex: 1; } 
+        .info-item span { display: block; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; } 
+        .info-item strong { color: white; font-weight: 800; font-size: 1.1rem; }
+        .info-item .prize-text { color: var(--accent-gold); }
+        
+        .progress-box { margin-bottom: 16px; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; color: var(--text-muted); }
+        .progress { height: 6px; background: rgba(0,0,0,0.5); border-radius: var(--radius-xl); overflow: hidden; } 
+        .progress-bar { background: var(--gradient-primary); }
+
+        /* Wallet */
+        .wallet-card-hero { background: linear-gradient(135deg, #1e1e24, #121218); border-radius: var(--radius-lg); padding: 24px; border: 1px solid var(--border-glass); margin-bottom: 20px; text-align: center; position: relative;}
+        .balance-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px;}
+        .balance-value { font-size: 2.5rem; font-weight: 800; color: #fff; margin: 0 0 20px;}
+        
+        /* Payment Selection Cards */
+        .payment-option-card { border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; background: rgba(0,0,0,0.2); }
+        .payment-option-card.active { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.1); }
+        .payment-option-card input[type="radio"] { accent-color: var(--accent-cyan); transform: scale(1.2); }
+
+        /* Profile */
+        .profile-avatar-wrapper { position: relative; display: inline-block; margin-bottom: 16px; }
+        .profile-avatar { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--accent-purple); object-fit: cover; padding: 3px; background: var(--bg-card); }
+        .edit-avatar-btn { position: absolute; bottom: 0; right: 0; width: 30px; height: 30px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid var(--bg-base); font-size: 0.9rem; cursor: pointer;}
+        
+        .stat-box { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 16px 10px; text-align: center; border: 1px solid var(--border-glass); }
+        .stat-box strong { display: block; font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 2px;}
+        .stat-box span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;}
+
+        /* Modals */
+        .modal-content { background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-glass); }
+        .modal-header { border-bottom: 1px solid var(--border-glass); padding: 20px; }
+        .modal-body { padding: 20px; }
+        .modal-title { font-weight: 800; font-size: 1.1rem; color: white;}
+        .btn-close-white { filter: invert(1); opacity: 0.6; }
+
+        /* Social Buttons */
+        .social-btn { display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: 700; font-size: 1rem; padding: 14px; border-radius: var(--radius-md); color: white; text-decoration: none; margin-bottom: 12px; border: none;}
+        .social-wa { background: #25D366; } .social-tg { background: #0088cc; } .social-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); } .social-yt { background: #ff0000; }
+        
+        /* Referral Box */
+        .referral-box { background: rgba(255,255,255,0.02); border: 1px dashed var(--border-glass); border-radius: var(--radius-lg); padding: 20px; text-align: center; margin-bottom: 20px; }
+
+        /* Custom Accordion for Policies */
+        .accordion-button:not(.collapsed) { background-color: rgba(6, 182, 212, 0.15) !important; color: var(--accent-cyan) !important; border-bottom: 1px solid var(--border-glass); box-shadow: none !important; }
+        .accordion-button:focus { box-shadow: none !important; }
+        .accordion-button::after { filter: invert(1) grayscale(100%) brightness(200%); }
+        .accordion-item { border-radius: var(--radius-md) !important; margin-bottom: 12px; }
+    </style>
+</head>
+
+<body>
+    <!-- Global Loader -->
+    <div id="globalLoaderEl" style="position: fixed; inset: 0; background: rgba(9, 9, 11, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="spinner-border" style="color: var(--accent-cyan); width: 3rem; height: 3rem;" role="status"></div>
+        <div class="mt-3 fw-bold text-uppercase" style="color: var(--text-muted); letter-spacing: 2px; font-size: 0.9rem;">Loading...</div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <button class="btn-custom-link" id="headerBackBtnEl" style="font-size: 1.8rem; display: none; color: white; padding-right:10px; background:transparent; border:none;"><i class="bi bi-arrow-left-short"></i></button>
+            <img src="https://via.placeholder.com/80/18181b/06b6d4?text=LOGO" alt="Logo" class="header-logo app-logo-img" id="appLogoEl">
+            <div class="header-title" id="headerTitleContainerEl">
+                <span class="app-name-text">App Name</span>
+                <small id="headerUserGreetingEl" style="display:none;"></small>
+            </div>
+            <div class="header-title text-gradient" id="headerGameTitleEl" style="display:none;">Page Title</div>
+        </div>
+        <div class="header-right">
+            <!-- Notifications Button -->
+            <button class="notification-icon" id="notificationBtnEl" style="display: none;">
+                <i class="bi bi-bell"></i>
+                <span class="notification-badge" id="notificationBadgeEl" style="display: none;">0</span>
+            </button>
+            <button class="wallet-chip" id="headerWalletChipEl" style="display: none;" data-section="wallet-section">
+                <i class="bi bi-wallet2"></i> ₹<span id="headerChipBalanceEl">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- ================= LOGIN / SIGNUP ================= -->
+        <section id="login-section" class="section active">
+            <div class="text-center mb-4 pt-4">
+                <img src="https://via.placeholder.com/100/18181b/06b6d4?text=LOGO" class="app-logo-img" style="width: 80px; height: 80px; object-fit: cover; border-radius: 16px; margin-bottom: 16px;">
+                <h2 class="fw-bold m-0 text-gradient">Welcome to <span class="app-name-text">Arena</span></h2>
+                <p class="text-muted small fw-bold">Play. Compete. Win Cash.</p>
+            </div>
+            
+            <div class="glass-card">
+                <form id="emailLoginForm">
+                    <div class="mb-3"><label class="form-label">Email Address</label><input type="email" class="form-control" id="loginEmailInputEl" placeholder="player@email.com" required></div>
+                    <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="loginPasswordInputEl" placeholder="••••••••" required></div>
+                    <div id="loginStatusMessageEl" style="display: none;"></div>
+                    <button type="button" class="btn-custom btn-primary-gradient mt-2 mb-3" id="loginEmailBtnEl">Secure Login</button>
+                    <hr class="my-3" style="border-color: var(--border-glass);">
+                    <button type="button" class="btn-custom btn-outline-custom" id="showSignupToggleBtnEl">Create New Account</button>
+                </form>
+
+                <form id="emailSignupForm" style="display: none;">
+                    <div class="mb-3"><label class="form-label">In-Game Name</label><input type="text" class="form-control" id="signupNameInputEl" placeholder="Your Game Name" required></div>
+                    <div class="mb-3"><label class="form-label">Email Address</label><input type="email" class="form-control" id="signupEmailInputEl" placeholder="Your Gamil Id" required></div>
+                    <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="signupPasswordInputEl" placeholder="Min 6 characters" required minlength="6"></div>
+                    <div class="mb-3"><label class="form-label">Invite Code (Optional)</label><input type="text" class="form-control" id="signupReferralCodeInputEl" placeholder="Referral Code"></div>
+                    <div id="signupStatusMessageEl" style="display: none;"></div>
+                    <button type="button" class="btn-custom btn-primary-gradient mt-2 mb-3" id="signupEmailBtnEl">Register Account</button>
+                    <button type="button" class="btn-custom btn-outline-custom" id="showLoginToggleBtnEl">Back to Login</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= HOME SECTION ================= -->
+        <section id="home-section" class="section">
+            <div class="swiper-container" id="promotionSliderEl">
+                <div class="swiper-wrapper placeholder-glow"><div class="swiper-slide"><span class="placeholder w-100 h-100 d-block"></span></div></div>
+                <div class="swiper-pagination"></div>
+            </div>
+
+            <div class="glass-card p-3 mb-4">
+                <div class="home-nav-icons" id="homeQuickNavEl">
+                    <a href="#" data-section="tournaments-section" class="home-nav-item"><div class="icon-wrapper"><i class="bi bi-controller"></i></div><span>Matches</span></a>
+                    <a href="#" data-section="wallet-section" class="home-nav-item"><div class="icon-wrapper"><i class="bi bi-wallet2"></i></div><span>Wallet</span></a>
+                    <a href="#" data-section="leaderboard-section" class="home-nav-item"><div class="icon-wrapper"><i class="bi bi-trophy"></i></div><span>Rank</span></a>
+                    <a href="#" data-section="support-section" class="home-nav-item"><div class="icon-wrapper"><i class="bi bi-headset"></i></div><span>Support</span></a>
+                </div>
+            </div>
+
+            <h2 class="section-title"><i class="bi bi-lightning-charge-fill" style="color: var(--accent-gold);"></i> Top Games</h2>
+            <div class="row g-3 mb-4 placeholder-glow" id="gamesListEl">
+                <div class="col-6"><div class="game-card-new placeholder"></div></div><div class="col-6"><div class="game-card-new placeholder"></div></div>
+            </div>
+
+            <h2 class="section-title"><i class="bi bi-shield-check" style="color: var(--accent-cyan);"></i> My Contests</h2>
+            <div id="myContestsListEl" class="placeholder-glow"><div class="glass-card placeholder-glow p-0"><span class="placeholder col-12" style="height: 150px;"></span></div></div>
+            <p id="noContestsMessageEl" class="text-muted text-center small fw-bold mt-3" style="display: none;">No upcoming matches joined.</p>
+        </section>
+
+        <!-- ================= TOURNAMENTS SECTION ================= -->
+        <section id="tournaments-section" class="section">
+            <div class="tournament-tabs"> 
+                <button class="tab-item active" data-status="upcoming">Upcoming</button> 
+                <button class="tab-item" data-status="ongoing">Ongoing</button> 
+                <button class="tab-item" data-status="completed">Results</button> 
+            </div>
+            <div id="tournamentsListContainerEl" class="placeholder-glow"></div>
+            <div id="noTournamentsMessageEl" class="text-center py-5" style="display: none;"><i class="bi bi-emoji-frown text-muted" style="font-size: 3rem;"></i><p class="text-muted fw-bold mt-2">No matches scheduled.</p></div>
+        </section>
+
+        <!-- ================= WALLET SECTION ================= -->
+        <section id="wallet-section" class="section">
+            <h2 class="section-title mb-3">Wallet</h2>
+            <div class="wallet-card-hero placeholder-glow">
+                <div class="balance-label">Total Balance</div>
+                <div class="balance-value" id="walletTotalBalanceEl">₹<span class="placeholder col-4"></span></div>
+                <div class="d-flex gap-2">
+                    <button class="btn-custom btn-primary-gradient flex-fill" id="addAmountWalletBtnEl"><i class="bi bi-plus-lg"></i> Deposit</button>
+                    <button class="btn-custom btn-outline-custom flex-fill" id="withdrawBtnEl"><i class="bi bi-arrow-down-left"></i> Withdraw</button>
+                </div>
+            </div>
+            
+            <div class="row g-3 mb-4 placeholder-glow">
+                <div class="col-6"><div class="glass-card text-center p-3 m-0"><i class="bi bi-trophy-fill fs-3 mb-2 d-block" style="color: var(--accent-gold);"></i><span class="small text-muted fw-bold text-uppercase d-block mb-1">Winnings</span><h4 class="mb-0 fw-bold text-white" id="walletWinningCashEl">₹<span class="placeholder col-6"></span></h4></div></div>
+                <div class="col-6"><div class="glass-card text-center p-3 m-0"><i class="bi bi-gift-fill fs-3 mb-2 d-block" style="color: var(--accent-cyan);"></i><span class="small text-muted fw-bold text-uppercase d-block mb-1">Bonus</span><h4 class="mb-0 fw-bold text-white" id="walletBonusCashEl">₹<span class="placeholder col-6"></span></h4></div></div>
+            </div>
+
+            <h2 class="section-title mt-4"><i class="bi bi-clock-history" style="color: var(--accent-purple);"></i> Transaction History</h2>
+            <div id="walletHistoryListEl" class="placeholder-glow mb-4">
+                <p class="text-muted text-center small fw-bold mt-3">Loading history...</p>
+            </div>
+        </section>
+
+        <!-- ================= RECHARGE (DEPOSIT) ================= -->
+        <section id="recharge-section" class="section">
+            <div id="recharge-step-1-amount">
+                <h2 class="section-title text-center mb-3 pt-2 justify-content-center">Add Funds</h2>
+                <div class="glass-card text-center py-4">
+                    <label class="form-label d-block mb-3">Enter Amount</label>
+                    <div class="d-flex justify-content-center align-items-center mb-4">
+                        <span class="fw-bold text-muted me-1" style="font-size: 2rem;">₹</span>
+                        <input type="number" id="rechargeAmountInput" class="form-control text-center fw-bold" style="background: transparent; border: none; border-bottom: 2px solid var(--accent-cyan); border-radius: 0; width: 120px; color: white; font-size: 2.5rem; padding: 0;" placeholder="0" min="10" max="5000">
+                    </div>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                        <button class="btn btn-outline-custom amount-preset-btn rounded-pill px-3 py-1 fw-bold small" data-amount="50">₹50</button>
+                        <button class="btn btn-outline-custom amount-preset-btn rounded-pill px-3 py-1 fw-bold small" data-amount="100">₹100</button>
+                        <button class="btn btn-outline-custom amount-preset-btn rounded-pill px-3 py-1 fw-bold small" data-amount="200">₹200</button>
+                        <button class="btn btn-outline-custom amount-preset-btn rounded-pill px-3 py-1 fw-bold small" data-amount="500">₹500</button>
+                    </div>
+                    <button class="btn-custom btn-primary-gradient w-100" id="goToStep2Btn">Next Step</button>
+                </div>
+            </div>
+
+            <div id="recharge-step-2-method" style="display: none;">
+                <h2 class="section-title text-center mb-3 pt-2 justify-content-center">Select Payment Mode</h2>
+                <div class="glass-card text-center">
+                    <span class="text-muted fw-bold text-uppercase small">Adding</span>
+                    <h3 class="fw-bold m-0 mb-4 text-gradient">₹<span id="rechargeAmountConfirm">0</span></h3>
+                    
+                    <div class="text-start mb-4">
+                        <label class="payment-option-card active" id="optionAutoCard">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-shield-lock-fill fs-3" style="color: var(--accent-cyan);"></i>
+                                <div><strong class="d-block text-white">Auto Payment</strong><span class="small text-muted">Razorpay / Cards / UPI</span></div>
+                            </div>
+                            <input type="radio" name="payType" value="auto" checked>
+                        </label>
+
+                        <label class="payment-option-card" id="optionManualCard">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-qr-code-scan fs-3" style="color: var(--accent-purple);"></i>
+                                <div><strong class="d-block text-white">Manual Transfer</strong><span class="small text-muted">Scan QR & Submit UTR</span></div>
+                            </div>
+                            <input type="radio" name="payType" value="manual">
+                        </label>
+                    </div>
+                    <button class="btn-custom btn-primary-gradient w-100" id="proceedToPayActionBtn">Proceed to Pay</button>
+                </div>
+            </div>
+
+            <div id="recharge-step-3-manual" style="display: none;">
+                <h2 class="section-title text-center mb-3 pt-2 justify-content-center">Manual Payment</h2>
+                <div class="glass-card text-center">
+                    <p class="text-muted small mb-3">Scan QR or Copy UPI ID to pay exactly <strong class="text-white fs-5">₹<span id="rechargeFinalAmount">0</span></strong></p>
+                    <div class="bg-white p-2 rounded-3 d-inline-block mb-3"><img src="https://via.placeholder.com/150" id="rechargeQrCodeImg" style="width:160px; height:160px; object-fit:contain;"></div>
+                    <div class="bg-dark p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center border border-secondary">
+                        <div class="text-start"><span class="small text-muted d-block fw-bold mb-1">Target UPI ID</span><strong class="text-white fs-6" id="rechargeUpiId">admin@upi</strong></div>
+                        <button class="btn btn-sm btn-outline-custom copy-btn" data-target="#rechargeUpiId"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                    <h6 class="fw-bold text-start mb-2 small text-muted text-uppercase">Submit UTR (Ref No)</h6>
+                    <input type="text" class="form-control mb-3" id="rechargeUtrInput" placeholder="Enter 12-digit UTR">
+                    <button class="btn-custom btn-primary-gradient w-100" id="rechargeSubmitBtn">Verify Transfer</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= LEADERBOARD ================= -->
+        <section id="leaderboard-section" class="section">
+            <div class="text-center mb-4 mt-2">
+                <i class="bi bi-trophy-fill" style="font-size: 3rem; color: var(--accent-gold);"></i>
+                <h2 class="section-title justify-content-center m-0 mt-2">Hall of Fame</h2>
+                <p class="text-muted small fw-bold">Top players ranking</p>
+            </div>
+            <div class="glass-card p-2" id="leaderboardListEl"></div>
+        </section>
+
+        <!-- ================= PROFILE ================= -->
+        <section id="profile-section" class="section">
+            <div class="glass-card profile-header border-0 shadow-none mb-0 bg-transparent text-center">
+                <div class="profile-avatar-wrapper placeholder-glow">
+                    <img src="https://via.placeholder.com/100" class="profile-avatar" id="profileAvatarEl">
+                    <button class="edit-avatar-btn" id="editNameBtnEl"><i class="bi bi-pencil-fill"></i></button>
+                </div>
+                <h3 class="fw-bold m-0 mt-2 mb-1" id="profileNameEl"><span class="placeholder col-6"></span></h3>
+                <p class="text-muted small mb-4" id="profileEmailEl"><span class="placeholder col-8"></span></p>
+                
+                <div class="row g-2 profile-stats-grid placeholder-glow mb-4">
+                    <div class="col-4"><div class="stat-box"><strong id="profileTotalMatchesEl"><span class="placeholder col-6"></span></strong><span>Matches</span></div></div>
+                    <div class="col-4"><div class="stat-box"><strong id="profileWonMatchesEl"><span class="placeholder col-6"></span></strong><span>Wins</span></div></div>
+                    <div class="col-4"><div class="stat-box"><strong id="profileTotalEarningsEl" style="color: var(--accent-gold);"><span class="placeholder col-8"></span></strong><span>Earned</span></div></div>
+                </div>
+            </div>
+
+            <div class="list-group glass-card p-0 overflow-hidden mb-4">
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center" data-section="matchhistory-trigger">
+                    <span><i class="bi bi-clock-history"></i> Match History</span><i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center" data-section="referral-section">
+                    <span><i class="bi bi-gift-fill"></i> Refer & Earn</span><i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center" data-section="support-section">
+                    <span><i class="bi bi-headset"></i> Help & Support</span><i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center" data-section="policies-section">
+                    <span><i class="bi bi-shield-check"></i> Rules & Policies</span><i class="bi bi-chevron-right text-muted"></i>
+                </a>
+                <button class="list-group-item d-flex justify-content-between align-items-center text-danger w-100 text-start" id="logoutProfileBtnEl">
+                    <span><i class="bi bi-box-arrow-right"></i> Secure Logout</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= EARNINGS ================= -->
+        <section id="earnings-section" class="section">
+            <h2 class="section-title">Statistics & Earnings</h2>
+            <div class="glass-card text-center py-4 mb-3 placeholder-glow">
+                <div style="width: 60px; height: 60px; background: rgba(6, 182, 212, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;"><i class="bi bi-graph-up-arrow fs-2" style="color: var(--accent-cyan);"></i></div>
+                <h2 class="fw-bold mb-1 text-white" id="earningsTotalEl">₹<span class="placeholder col-4"></span></h2>
+                <p class="text-muted small text-uppercase fw-bold m-0">Match Earnings</p>
+            </div>
+            <div class="glass-card text-center py-4 placeholder-glow">
+                <div style="width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;"><i class="bi bi-people-fill fs-2" style="color: var(--accent-purple);"></i></div>
+                <h2 class="fw-bold mb-1 text-white" id="earningsReferralEl">₹<span class="placeholder col-4"></span></h2>
+                <p class="text-muted small text-uppercase fw-bold m-0">Referral Rewards</p>
+            </div>
+        </section>
+
+        <!-- ================= REFER & EARN ================= -->
+        <section id="referral-section" class="section">
+            <div class="text-center pt-3 mb-4">
+                <i class="bi bi-boxes text-gradient" style="font-size: 5rem;"></i>
+                <h2 class="fw-bold mb-2 mt-2">Refer & Earn</h2>
+                <p class="text-muted small px-2">Invite friends to play tournaments. You both earn <strong class="text-white" id="referralBonusText">₹0</strong> on signup!</p>
+            </div>
+            <div class="referral-box">
+                <p class="text-muted small fw-bold mb-2">Your Invite Link</p>
+                <div class="bg-black p-3 rounded text-white fw-bold fs-6 mb-3 border border-secondary" style="word-wrap: break-word;" id="myReferralLinkEl">Generating...</div>
+                <button class="btn-custom btn-primary-gradient w-100 copy-btn" data-target="#myReferralLinkEl"><i class="bi bi-clipboard"></i> Copy Invite Link</button>
+            </div>
+        </section>
+
+        <!-- ================= HELP & SUPPORT ================= -->
+        <section id="support-section" class="section">
+            <div class="text-center pt-3 mb-4">
+                <i class="bi bi-headset" style="font-size: 4rem; color: var(--accent-purple);"></i>
+                <h2 class="fw-bold mb-2 mt-2">Get Support</h2>
+                <p class="text-muted small px-3">Facing issues with matches or wallet? Connect with our team.</p>
+            </div>
+            
+            <div class="px-2" id="supportLinksContainer">
+                <a href="#" class="social-btn social-wa" id="supportWaBtn" target="_blank" style="display:none;"><i class="bi bi-whatsapp fs-4"></i> WhatsApp Support</a>
+                <a href="#" class="social-btn social-tg" id="supportTgBtn" target="_blank" style="display:none;"><i class="bi bi-telegram fs-4"></i> Join Telegram</a>
+                <a href="#" class="social-btn social-ig" id="supportIgBtn" target="_blank" style="display:none;"><i class="bi bi-instagram fs-4"></i> Instagram</a>
+                <a href="#" class="social-btn social-yt" id="supportYtBtn" target="_blank" style="display:none;"><i class="bi bi-youtube fs-4"></i> YouTube</a>
+                <p id="noSupportLinksMsg" class="text-center text-muted small mt-4" style="display:none;">Support options are currently unavailable. Please check back later.</p>
+            </div>
+        </section>
+
+        <!-- ================= POLICIES ================= -->
+        <section id="policies-section" class="section">
+            <div class="accordion p-0" id="policiesAccordion">
+                <!-- Injected via JS dynamically -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Sleek Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-section="home-section"><i class="bi bi-house-door-fill"></i><span>Home</span></button>
+        <button class="nav-item" data-section="wallet-section"><i class="bi bi-wallet2"></i><span>Wallet</span></button>
+        <button class="nav-item nav-item-center" data-section="leaderboard-section"><i class="bi bi-trophy-fill"></i><span>Rank</span></button>
+        <button class="nav-item" data-section="earnings-section"><i class="bi bi-graph-up-arrow"></i><span>Stats</span></button>
+        <button class="nav-item" data-section="profile-section"><i class="bi bi-person-fill"></i><span>Profile</span></button>
+    </nav>
+
+    <!-- ================= MODALS ================= -->
+    <!-- Withdraw Modal -->
+    <div class="modal fade" id="withdrawModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-bank me-2 text-primary"></i> Withdraw Funds</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="glass-card text-center mb-3 p-3">
+                        <span class="small text-muted fw-bold text-uppercase">Available Winnings</span>
+                        <h3 class="text-white fw-bold m-0 mt-1" id="withdrawModalBalanceEl">₹0.00</h3>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount (Min ₹<span id="minWithdrawAmountEl">50</span>)</label>
+                        <input type="number" class="form-control" id="withdrawAmountInputEl" placeholder="Enter amount">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Payment Method (UPI/Bank)</label>
+                        <input type="text" class="form-control" id="withdrawMethodInputEl" placeholder="Enter UPI ID or Bank Details">
+                    </div>
+                    <button type="button" class="btn-custom btn-primary-gradient w-100" id="submitWithdrawRequestBtnEl">Submit Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editNameModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Edit Profile</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="mb-3"><label class="form-label">Display Name</label><input type="text" class="form-control" id="editNameInput" required></div><hr class="my-3 border-secondary"><div class="mb-3"><label class="form-label">New Password (Optional)</label><input type="password" class="form-control" id="editPasswordInput" placeholder="Leave blank to keep current"></div><button type="button" class="btn-custom btn-primary-gradient w-100 mt-2" id="saveNameChangeBtn">Save Changes</button></div></div></div></div>
+
+    <!-- Match History Modal -->
+    <div class="modal fade" id="matchHistoryModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"><div class="modal-content" style="height: 80vh;"><div class="modal-header"><h5 class="modal-title"><i class="bi bi-clock-history text-primary me-2"></i> Match History</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="matchHistoryBodyEl"></div></div></div></div>
+
+    <!-- Notifications Modal -->
+    <div class="modal fade" id="notificationsModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content" style="max-height: 80vh;">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-bell-fill text-danger me-2"></i> Notifications</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3">
+                    <div id="notificationsListEl"></div>
+                    <p id="notificationsEmptyMsgEl" class="text-center text-muted py-5 fw-bold" style="display: none;">No new notifications</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Details Modal -->
+    <div class="modal fade" id="matchDetailsModalEl" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="matchDetailsModalTitleEl">Match Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body text-muted" id="matchDetailsModalBodyEl" style="line-height: 1.6;"></div></div></div></div>
+    
+    <!-- Join Tournament Modal -->
+    <div class="modal fade" id="joinTournamentDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-gradient">Join Match</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="glass-card text-center mb-4 p-3">
+                        <span class="text-muted small fw-bold text-uppercase">Total Entry Fee</span>
+                        <h3 id="joinFeeDisplayEl" class="text-white fw-bold m-0 mt-1">₹0.00</h3>
+                    </div>
+                    <form id="joinTournamentForm">
+                        <input type="hidden" id="joinTournamentIdInput">
+                        <div id="dynamicPlayerInputsContainer"></div>
+                        <button type="button" class="btn-custom btn-primary-gradient w-100 mt-3" id="confirmJoinBtn">Confirm & Pay</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ID Password Modal -->
+    <div class="modal fade" id="idPasswordModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-key-fill text-primary me-2"></i> Room Credentials</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="small text-muted mb-4">Credentials will be visible here before match starts.</p>
+                    
+                    <div class="bg-dark p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center border border-secondary">
+                        <div class="text-start">
+                            <span class="small text-muted d-block text-uppercase fw-bold">Room ID</span>
+                            <strong class="text-white fs-5" id="roomIdDisplayEl">Waiting...</strong>
+                        </div>
+                        <button class="btn btn-sm btn-outline-custom copy-btn" data-target="#roomIdDisplayEl"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                    
+                    <div class="bg-dark p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center border border-secondary">
+                        <div class="text-start">
+                            <span class="small text-muted d-block text-uppercase fw-bold">Password</span>
+                            <strong class="text-white fs-5" id="roomPasswordDisplayEl">Waiting...</strong>
+                        </div>
+                        <button class="btn btn-sm btn-outline-custom copy-btn" data-target="#roomPasswordDisplayEl"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase & Logic Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, get, set, update, push, query, orderByChild, equalTo, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        import { getAuth, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDJ0nSLIeDzO-PkAH_CIXIyap-oDDY8ue0",
+            authDomain: "auraapp-65301.firebaseapp.com",
+            databaseURL: "https://auraapp-65301-default-rtdb.firebaseio.com",
+            projectId: "auraapp-65301",
+            storageBucket: "auraapp-65301.firebasestorage.app",
+            messagingSenderId: "724339614365",
+            appId: "1:724339614365:web:c0d42f72f75fe5b0892a74"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const getEl = (id) => document.getElementById(id);
+
+        let currentUser = null, userProfile = {}, currentSectionId = 'login-section', appSettings = {}, swiperInstance, currentTournamentGameId = null;
+
+        // Initialize Modals
+        let modals = {};
+        document.addEventListener('DOMContentLoaded', () => {
+            modals = {
+                withdraw: new bootstrap.Modal(getEl('withdrawModalEl')),
+                editName: new bootstrap.Modal(getEl('editNameModal')),
+                matchHistory: new bootstrap.Modal(getEl('matchHistoryModal')),
+                notifications: new bootstrap.Modal(getEl('notificationsModalEl')),
+                join: new bootstrap.Modal(getEl('joinTournamentDetailsModal')),
+                idPass: new bootstrap.Modal(getEl('idPasswordModalEl')),
+                matchDetails: new bootstrap.Modal(getEl('matchDetailsModalEl'))
+            };
+        });
+
+        const showLoader = (show) => { getEl('globalLoaderEl').style.display = show ? 'flex' : 'none'; };
+        const formatDate = (ts) => ts ? new Date(ts).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour:'numeric', minute:'2-digit' }) : 'N/A';
+        function getTimeRemaining(startTime) { const diff = startTime - Date.now(); if (diff <= 0) return 'Live Now'; const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000); return `${d>0?d+'d ':''}${h>0||d>0?h+'h ':''}${m}m`; }
+
+        // Robust Fallback Copy Function
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea"); 
+            textArea.value = text; 
+            textArea.style.position = "fixed"; 
+            document.body.appendChild(textArea); 
+            textArea.focus(); 
+            textArea.select();
+            try { 
+                var successful = document.execCommand('copy'); 
+                if(successful) alert('Copied Successfully!'); 
+                else alert('Failed to copy manually.'); 
+            } catch (err) {} 
+            document.body.removeChild(textArea);
+        }
+
+        /* --- Section Navigation --- */
+        function showSection(sectionId, backSection = null) {
+            if (!auth) return;
+            const target = getEl(sectionId);
+            if (!target) return showSection(currentUser ? 'home-section' : 'login-section');
+            
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            target.classList.add('active');
+            currentSectionId = sectionId;
+            
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.section === sectionId);
+            });
+            
+            const showBack =['tournaments-section', 'recharge-section', 'support-section', 'referral-section', 'policies-section'].includes(sectionId);
+            getEl('headerTitleContainerEl').style.display = !showBack ? 'flex' : 'none';
+            getEl('headerBackBtnEl').style.display = showBack ? 'inline-block' : 'none';
+            if(showBack) getEl('headerBackBtnEl').onclick = () => showSection(backSection || 'home-section');
+            getEl('headerGameTitleEl').style.display = showBack ? 'block' : 'none';
+            
+            if (sectionId === 'tournaments-section' && currentTournamentGameId) getEl('headerGameTitleEl').textContent = appSettings?.games?.[currentTournamentGameId]?.name || 'Matches';
+            else if (sectionId === 'recharge-section') getEl('headerGameTitleEl').textContent = 'Add Funds';
+            else if (sectionId === 'support-section') getEl('headerGameTitleEl').textContent = 'Support';
+            else if (sectionId === 'referral-section') getEl('headerGameTitleEl').textContent = 'Refer & Earn';
+            else if (sectionId === 'policies-section') getEl('headerGameTitleEl').textContent = 'Rules & Policies';
+
+            if(sectionId === 'home-section') { loadPromotions(); loadGames(); loadMyContests(); }
+            if(sectionId === 'leaderboard-section') loadLeaderboard();
+            if(sectionId === 'tournaments-section' && currentTournamentGameId) filterTournaments(currentTournamentGameId, document.querySelector('.tournament-tabs .active').dataset.status);
+            
+            if(sectionId === 'wallet-section') { loadWalletHistory(); }
+
+            window.scrollTo(0, 0);
+        }
+
+        /* --- Global Event Delegation --- */
+        document.addEventListener('click', (e) => {
+            
+            // 👇 ADDED: DYNAMIC DEMO LINK SYSTEM 👇
+            const demoLinkNode = e.target.closest('.demo-btn, a[href="https://example.com/demo"],[data-is-demo="true"]');
+            if(demoLinkNode) {
+                e.preventDefault(); 
+                const savedDemoLink = localStorage.getItem('demo_link');
+                
+                if(!savedDemoLink || savedDemoLink.trim() === '') {
+                    alert('Demo link not available');
+                } else {
+                    window.location.href = savedDemoLink;
+                }
+                return; 
+            }
+            // 👆 =================================== 👆
+
+            // Handle Sections
+            const btn = e.target.closest('[data-section]');
+            if(btn) {
+                e.preventDefault();
+                const target = btn.dataset.section;
+                if(target === 'matchhistory-trigger') { modals.matchHistory.show(); loadMatchHistory(); }
+                else showSection(target, target.includes('policies') || target.includes('referral') || target.includes('support') ? 'profile-section' : 'home-section');
+            }
+
+            // Handle ALL Copy Buttons
+            const copyBtn = e.target.closest('.copy-btn');
+            if(copyBtn) {
+                e.preventDefault();
+                const targetSelector = copyBtn.dataset.target;
+                const targetElement = document.querySelector(targetSelector);
+                
+                if(targetElement) {
+                    const textToCopy = targetElement.textContent.trim();
+                    
+                    if(textToCopy === "Demo link not available" || textToCopy === "Generating...") {
+                        alert("Demo link not available");
+                        return;
+                    }
+
+                    if (navigator.clipboard && window.isSecureContext) { 
+                        navigator.clipboard.writeText(textToCopy)
+                            .then(() => alert('Copied Successfully!'))
+                            .catch(() => fallbackCopyTextToClipboard(textToCopy)); 
+                    } else { 
+                        fallbackCopyTextToClipboard(textToCopy); 
+                    }
+                }
+            }
+        });
+
+        /* --- Auth Handling --- */
+        onAuthStateChanged(auth, async (user) => {
+            showLoader(true); currentUser = user;
+            if (user) {
+                getEl('notificationBtnEl').style.display = 'flex';
+                const uRef = ref(db, 'users/' + user.uid);
+                const snap = await get(uRef);
+                if (snap.exists()) { userProfile = snap.val(); } 
+                else {
+                    const sBonus = appSettings.signupBonus ?? 10;
+                    userProfile = { uid: user.uid, displayName: user.email?.split('@')[0], email: user.email, balance: sBonus, winningCash: 0, bonusCash: sBonus, joinedTournaments: {}, createdAt: serverTimestamp() };
+                    await set(uRef, userProfile);
+                }
+                updateUIForUser();
+                onValue(uRef, s => { if(s.exists()){ userProfile = s.val(); updateUIForUser(); } });
+                showSection(currentSectionId !== 'login-section' ? currentSectionId : 'home-section');
+                setupReferralSystem();
+            } else { 
+                getEl('notificationBtnEl').style.display = 'none';
+                getEl('headerWalletChipEl').style.display='none'; 
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(i=>i.style.display='none');
+                showSection('login-section'); 
+            }
+            showLoader(false);
+        });
+
+        getEl('loginEmailBtnEl').onclick = async () => {
+            showLoader(true);
+            try { await signInWithEmailAndPassword(auth, getEl('loginEmailInputEl').value, getEl('loginPasswordInputEl').value); } 
+            catch (e) { alert("Login failed. Check email or password."); } finally { showLoader(false); }
+        };
+
+        getEl('signupEmailBtnEl').onclick = async () => {
+            const name = getEl('signupNameInputEl').value, em = getEl('signupEmailInputEl').value, pw = getEl('signupPasswordInputEl').value;
+            if(!name || pw.length<6) return alert('Enter name and min 6 char password.');
+            showLoader(true);
+            try { 
+                const cred = await createUserWithEmailAndPassword(auth, em, pw); 
+                await update(ref(db, `users/${cred.user.uid}`), { displayName: name });
+                const refCode = getEl('signupReferralCodeInputEl').value.trim();
+                if(refCode) await push(ref(db, 'pendingReferrals'), {referrerUid: refCode, referredEmail: em, status: 'pending', timestamp: serverTimestamp()});
+            } catch (e) { alert(e.message); } finally { showLoader(false); }
+        };
+
+        getEl('showSignupToggleBtnEl').onclick = () => { getEl('emailLoginForm').style.display='none'; getEl('emailSignupForm').style.display='block'; };
+        getEl('showLoginToggleBtnEl').onclick = () => { getEl('emailLoginForm').style.display='block'; getEl('emailSignupForm').style.display='none'; };
+        getEl('logoutProfileBtnEl').onclick = () => signOut(auth);
+
+        /* --- Global Setup Data --- */
+        function listenToAppSettings() {
+            const settingsRef = ref(db, 'settings');
+            onValue(settingsRef, (snap) => {
+                if(snap.exists()){
+                    appSettings = snap.val();
+                } else {
+                    appSettings = { minWithdraw: 50, signupBonus: 10, paymentGateway: 'manual', appName: 'NK E SPORTS' };
+                }
+                updateAppUIWithSettings();
+            });
+        }
+        listenToAppSettings();
+
+        function updateAppUIWithSettings() {
+            getEl('referralBonusText').textContent = `₹${appSettings.referralBonus || 0}`;
+            const logoUrl = appSettings.logoUrl || 'https://via.placeholder.com/100/18181b/06b6d4?text=LOGO';
+            const appName = appSettings.appName || 'NK E SPORTS';
+            
+            document.querySelectorAll('.app-logo-img').forEach(img => img.src = logoUrl);
+            document.querySelectorAll('.app-name-text').forEach(el => el.textContent = appName);
+
+            const waBtn = getEl('supportWaBtn');
+            const tgBtn = getEl('supportTgBtn');
+            const igBtn = getEl('supportIgBtn');
+            const ytBtn = getEl('supportYtBtn');
+            const noMsg = getEl('noSupportLinksMsg');
+
+            waBtn.style.display = 'none'; tgBtn.style.display = 'none'; igBtn.style.display = 'none'; ytBtn.style.display = 'none'; noMsg.style.display = 'none';
+            
+            let linkCount = 0;
+            if (appSettings.supportWa && appSettings.supportWa.trim() !== "" && appSettings.isWaActive !== false) { waBtn.href = appSettings.supportWa; waBtn.style.display = 'flex'; linkCount++; }
+            if (appSettings.supportTg && appSettings.supportTg.trim() !== "" && appSettings.isTgActive !== false) { tgBtn.href = appSettings.supportTg; tgBtn.style.display = 'flex'; linkCount++; }
+            if (appSettings.supportIg && appSettings.isIgActive !== false) { igBtn.href = appSettings.supportIg; igBtn.style.display = 'flex'; linkCount++; }
+            if (appSettings.supportYt && appSettings.isYtActive !== false) { ytBtn.href = appSettings.supportYt; ytBtn.style.display = 'flex'; linkCount++; }
+            
+            if (linkCount === 0) { noMsg.style.display = 'block'; }
+
+            const polDiv = getEl('policiesAccordion');
+            polDiv.innerHTML = '';
+            const policies =[ 
+                {id:'terms', title:'Terms & Conditions', txt: appSettings.policyTerms || 'Terms will be updated soon by admin.'}, 
+                {id:'privacy', title:'Privacy Policy', txt: appSettings.policyPrivacy || 'Privacy policy will be updated soon by admin.'}, 
+                {id:'refund', title:'Refund Policy', txt: appSettings.policyRefund || 'Refund policy will be updated soon by admin.'}, 
+                {id:'fairplay', title:'Fair Play Policy', txt: appSettings.policyFairPlay || 'Fair play policy will be updated soon by admin.'} 
+            ];
+            
+            let accHtml = '';
+            policies.forEach((p) => {
+                let formattedText = p.txt.replace(/\n/g, '<br>');
+                accHtml += `
+                <div class="accordion-item" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass);">
+                    <h2 class="accordion-header" id="head${p.id}">
+                        <button class="accordion-button collapsed shadow-none fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#col${p.id}" style="background: transparent; color: white; padding: 16px;">
+                            ${p.title}
+                        </button>
+                    </h2>
+                    <div id="col${p.id}" class="accordion-collapse collapse" data-bs-parent="#policiesAccordion">
+                        <div class="accordion-body text-muted small" style="line-height: 1.7; background: rgba(0,0,0,0.15);">
+                            ${formattedText}
+                        </div>
+                    </div>
+                </div>`;
+            });
+            polDiv.innerHTML = accHtml;
+        }
+
+        /* --- UI UPDATES --- */
+        function updateUIForUser() {
+            const up = userProfile;
+            
+            const dep = up.balance || 0;
+            const win = up.winningCash || 0;
+            const bon = up.bonusCash || 0;
+            
+            const usableBal = dep + win;
+            const totalBal = dep + win + bon;
+
+            getEl('headerWalletChipEl').style.display='flex'; document.querySelectorAll('.bottom-nav .nav-item').forEach(i=>i.style.display='flex');
+            getEl('headerUserGreetingEl').textContent = `Hi, ${up.displayName?.split(' ')[0]||'User'}`;
+            getEl('headerUserGreetingEl').style.display = 'block';
+            
+            getEl('headerChipBalanceEl').textContent = Math.floor(usableBal);
+            
+            getEl('walletTotalBalanceEl').innerHTML = `₹${totalBal.toFixed(2)}`;
+            getEl('walletWinningCashEl').innerHTML = `₹${win.toFixed(2)}`;
+            getEl('walletBonusCashEl').innerHTML = `₹${bon.toFixed(2)}`;
+            getEl('minWithdrawAmountEl').textContent = appSettings.minWithdraw || 50;
+            
+            getEl('withdrawModalBalanceEl').textContent = `₹${win.toFixed(2)}`;
+            
+            getEl('profileAvatarEl').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(up.displayName||'User')}&background=18181b&color=06b6d4&bold=true`;
+            getEl('profileNameEl').innerHTML = up.displayName || 'Player';
+            getEl('profileEmailEl').innerHTML = up.email;
+            getEl('profileTotalMatchesEl').innerHTML = up.totalMatches || Object.keys(up.joinedTournaments||{}).length || 0; 
+            getEl('profileWonMatchesEl').innerHTML = up.wonMatches || 0; 
+            getEl('profileTotalEarningsEl').innerHTML = `₹${win.toFixed(2)}`;
+            
+            getEl('earningsTotalEl').innerHTML = `₹${win.toFixed(2)}`;
+            getEl('earningsReferralEl').innerHTML = `₹${bon.toFixed(2)}`;
+        }
+
+        async function loadPromotions() {
+            const wrap = getEl('promotionSliderEl').querySelector('.swiper-wrapper');
+            try { const snap = await get(ref(db, 'promotions')); const promos = Object.values(snap.val() || {}); wrap.innerHTML = '';
+                if(promos.length > 0) { promos.forEach(p => wrap.innerHTML += `<div class="swiper-slide"><img src="${p.imageUrl}"></div>`);
+                    if(swiperInstance) swiperInstance.destroy(); swiperInstance = new Swiper(getEl('promotionSliderEl'), { loop: true, autoplay:{delay:3000}, pagination:{el:'.swiper-pagination'} });
+                } else getEl('promotionSliderEl').style.display = 'none';
+            } catch(e) {}
+        }
+        async function loadGames() {
+            const list = getEl('gamesListEl');
+            try { const snap = await get(ref(db, 'games')); const games = Object.entries(snap.val() || {}); list.innerHTML = '';
+                if(!appSettings.games) appSettings.games = {};
+                if(games.length > 0) { games.forEach(([id, g]) => { appSettings.games[id] = {name: g.name}; list.innerHTML += `<div class="col-6"><div class="game-card-new" style="background-image:url('${g.imageUrl}')" data-id="${id}"><div class="game-card-new-overlay"><span>${g.name}</span></div></div></div>`; });
+                    list.querySelectorAll('.game-card-new').forEach(c => c.onclick = () => { currentTournamentGameId = c.dataset.id; showSection('tournaments-section'); });
+                }
+            } catch(e) {}
+        }
+        async function loadMyContests() {
+            const joined = Object.keys(userProfile?.joinedTournaments||{}); getEl('myContestsListEl').innerHTML='';
+            if(joined.length===0) { getEl('noContestsMessageEl').style.display='block'; return; } getEl('noContestsMessageEl').style.display='none';
+            for(let id of joined) { const snap = await get(ref(db, `tournaments/${id}`)); if(snap.exists() &&['upcoming','ongoing'].includes(snap.val().status)) getEl('myContestsListEl').appendChild(createCard(id, snap.val())); }
+        }
+
+        document.querySelectorAll('.tournament-tabs .tab-item').forEach(t => t.onclick = e => { document.querySelectorAll('.tournament-tabs .tab-item').forEach(x=>x.classList.remove('active')); e.target.classList.add('active'); filterTournaments(currentTournamentGameId, e.target.dataset.status); });
+        
+        async function filterTournaments(gameId, status) {
+            const cont = getEl('tournamentsListContainerEl'); cont.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>'; getEl('noTournamentsMessageEl').style.display='none';
+            try { 
+                const snap = await get(query(ref(db, 'tournaments'), orderByChild('gameId'), equalTo(gameId)));
+                const tArray = Object.entries(snap.val() || {}).filter(([,t]) => {
+                    if (status === 'completed') return t.status === 'completed' || t.status === 'result';
+                    return t.status === status;
+                });
+                
+                if (status === 'completed') { tArray.sort(([,a],[,b]) => (b.startTime||0) - (a.startTime||0)); } 
+                else { tArray.sort(([,a],[,b]) => (a.startTime||0) - (b.startTime||0)); }
+
+                cont.innerHTML = '';
+                if(tArray.length > 0) tArray.forEach(([id, t]) => cont.appendChild(createCard(id, t))); else getEl('noTournamentsMessageEl').style.display='block';
+            } catch(e) {}
+        }
+
+        function createCard(id, t) {
+            const card = document.createElement('div'); card.className = 'tournament-card';
+            const eFee = t.entryFee || 0, maxP = t.maxPlayers || 0, regC = Object.keys(t.registeredPlayers || {}).length;
+            const isJ = currentUser && userProfile?.joinedTournaments?.[id];
+            const spotsL = maxP > 0 ? Math.max(0, maxP - regC) : Infinity;
+            
+            let btn = '', ipBtn = '';
+            
+            if (t.status === 'completed' || t.status === 'result') {
+                btn = `<button class="btn-custom btn-outline-custom" disabled>Completed</button>`;
+                ipBtn = `<button class="btn-custom btn-primary-gradient mt-2 w-100 btn-results" data-id="${id}">View Results</button>`;
+            }
+            else if(isJ) { 
+                btn = `<button class="btn-custom" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981;" disabled>Joined</button>`; 
+                if(['ongoing','upcoming'].includes(t.status)) ipBtn = `<button class="btn-custom btn-primary-gradient mt-2 w-100 btn-idpass" data-id="${id}">Room ID & Pass</button>`; 
+            }
+            else if(t.status === 'upcoming' && (maxP===0 || maxP-regC>0)) {
+                btn = `<button class="btn-custom btn-primary-gradient btn-join" data-id="${id}" data-fee="${eFee}">₹${eFee} Join</button>`;
+            }
+            else {
+                btn = `<button class="btn-custom btn-outline-custom" disabled>Closed</button>`;
+            }
+
+            card.innerHTML = `<img src="${t.bannerUrl || 'https://via.placeholder.com/400x200/18181b/06b6d4?text=Match'}" class="tournament-banner-image">
+            <div class="tournament-card-content">
+                <div class="tournament-card-tags"><span>${t.mode||'Solo'}</span>${t.map?`<span>${t.map}</span>`:''}</div>
+                <div class="tournament-card-header"><h3 class="tournament-card-title m-0">${t.name}</h3><div class="tournament-card-timer">${t.status==='upcoming'?getTimeRemaining(t.startTime):t.status}</div></div>
+                <div class="tournament-card-info">
+                    <div class="info-item border-end border-secondary"><span>Prize Pool</span><strong class="prize-text">₹${t.prizePool||0}</strong></div>
+                    <div class="info-item border-end border-secondary"><span>Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
+                    <div class="info-item"><span>Entry</span><strong>${eFee>0?'₹'+eFee:'Free'}</strong></div>
+                </div>
+                ${maxP>0 ? `<div class="progress-box"><div class="progress-text"><span>Spots</span><span>${spotsL} Left</span></div><div class="progress"><div class="progress-bar" style="width:${(regC/maxP)*100}%"></div></div></div>` : ''}
+                <div class="d-flex gap-2"><button class="btn-custom btn-outline-custom flex-fill btn-details" data-id="${id}">Details</button>${btn}</div>${ipBtn}
+            </div>`;
+            
+            card.querySelector('.btn-join')?.addEventListener('click', e => { 
+                getEl('joinTournamentIdInput').value = id; 
+                getEl('joinFeeDisplayEl').textContent = `₹${eFee}`; 
+                
+                let mode = (t.mode || 'Solo').toLowerCase();
+                let playerCount = 1; 
+                if (mode.includes('duo')) playerCount = 2;
+                else if (mode.includes('squad')) playerCount = 4;
+
+                let inputsHtml = '';
+                for(let i=1; i<=playerCount; i++) {
+                    let isRequired = i === 1 ? 'required' : '';
+                    let optionalTag = i > 1 ? '<span style="font-size: 0.65rem; color: var(--text-muted); float: right;">(Optional)</span>' : '';
+                    inputsHtml += `
+                        <div class="p-3 mb-3" style="background: rgba(0,0,0,0.3); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+                            <h6 class="text-white mb-3 fw-bold" style="font-size: 0.85rem; text-transform: uppercase;">
+                                <i class="bi bi-person-fill" style="color: var(--accent-cyan);"></i> ${playerCount > 1 ? `Player ${i} Details` : 'Player Details'}
+                                ${optionalTag}
+                            </h6>
+                            <div class="mb-3">
+                                <label class="form-label">In-Game Name</label>
+                                <input type="text" class="form-control player-name-input" placeholder="Enter Game Name" ${isRequired}>
+                            </div>
+                            <div class="mb-1">
+                                <label class="form-label">Game UID</label>
+                                <input type="number" class="form-control player-uid-input" placeholder="Enter UID" ${isRequired}>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                getEl('dynamicPlayerInputsContainer').innerHTML = inputsHtml;
+                modals.join.show(); 
+            });
+
+            card.querySelector('.btn-details')?.addEventListener('click', e => { 
+                getEl('matchDetailsModalTitleEl').textContent = t.name; 
+                getEl('matchDetailsModalBodyEl').innerHTML = `<p>${t.description || 'No special rules.'}</p><br><p><strong class="text-white">Map/Mode:</strong> ${t.mode||'Solo'}</p>`; 
+                modals.matchDetails.show(); 
+            });
+            
+            card.querySelector('.btn-idpass')?.addEventListener('click', e => { 
+                getEl('roomIdDisplayEl').textContent = t.roomId || 'Waiting...'; 
+                getEl('roomPasswordDisplayEl').textContent = t.roomPassword || 'Waiting...'; 
+                modals.idPass.show(); 
+            });
+
+            card.querySelector('.btn-results')?.addEventListener('click', e => { 
+                getEl('matchDetailsModalTitleEl').textContent = "Match Results - " + t.name; 
+                
+                let bodyHTML = `<div class="text-center"><p class="text-muted small mb-3">This match has successfully ended.</p>`;
+                
+                if(t.youtubeLink) {
+                    bodyHTML += `<a href="${t.youtubeLink}" target="_blank" class="btn btn-danger mb-4 w-100 fw-bold"><i class="bi bi-youtube"></i> Watch Highlights</a>`;
+                }
+                
+                bodyHTML += `<div class="alert text-start text-white small" style="background:rgba(6, 182, 212, 0.1); border: 1px solid var(--accent-cyan);">`;
+                bodyHTML += `Go to <strong>Profile -> Match History</strong> to check your personal kills, rank, and total winnings for this match.`;
+                bodyHTML += `</div></div>`;
+                
+                getEl('matchDetailsModalBodyEl').innerHTML = bodyHTML; 
+                modals.matchDetails.show(); 
+            });
+            
+            return card;
+        }
+
+        getEl('confirmJoinBtn').onclick = async () => {
+            const tid = getEl('joinTournamentIdInput').value;
+            const fee = parseFloat(getEl('joinFeeDisplayEl').textContent.replace('₹',''));
+            
+            const nameInputs = document.querySelectorAll('.player-name-input');
+            const uidInputs = document.querySelectorAll('.player-uid-input');
+            
+            let teamData =[];
+            let partialEntry = false;
+
+            for(let i = 0; i < nameInputs.length; i++) {
+                let pName = nameInputs[i].value.trim();
+                let pUid = uidInputs[i].value.trim();
+                
+                if(pName && pUid) {
+                    teamData.push({ gameName: pName, gameUid: pUid });
+                } else if (pName || pUid) {
+                    // One is filled, the other is not
+                    partialEntry = true;
+                }
+            }
+
+            if(partialEntry) return alert("Please fill both Name and UID for any player you add, or leave both fields empty.");
+            if(teamData.length === 0) return alert("Please fill details for at least 1 player!");
+            
+            const depBal = userProfile.balance || 0;
+            const winBal = userProfile.winningCash || 0;
+            
+            if((depBal + winBal) < fee) return alert("Insufficient Balance! Please deposit funds to play.");
+            
+            let remainingFee = fee;
+            let newDep = depBal;
+            let newWin = winBal;
+            
+            if (newDep >= remainingFee) {
+                newDep -= remainingFee;
+            } else {
+                remainingFee -= newDep;
+                newDep = 0;
+                newWin -= remainingFee; // Deduced from winnings
+            }
+            
+            showLoader(true);
+            try {
+                await update(ref(db, `users/${currentUser.uid}`), { 
+                    balance: newDep,
+                    winningCash: newWin
+                });
+                
+                const registrationData = {
+                    timestamp: serverTimestamp(),
+                    gameName: teamData[0].gameName,
+                    gameUid: teamData[0].gameUid,
+                    teamDetails: teamData 
+                };
+
+                await update(ref(db, `tournaments/${tid}/registeredPlayers/${currentUser.uid}`), registrationData);
+                await update(ref(db, `users/${currentUser.uid}/joinedTournaments/${tid}`), { timestamp: serverTimestamp() });
+                
+                modals.join.hide(); 
+                alert("Match Joined Successfully!"); 
+                showSection('home-section');
+            } catch(e){ 
+                alert("Error: " + e.message); 
+            } finally { 
+                showLoader(false); 
+            }
+        };
+
+        /* --- Recharge Handling --- */
+        let finalRechargeAmt = 0;
+        getEl('addAmountWalletBtnEl').onclick = () => { showSection('recharge-section', 'wallet-section'); getEl('recharge-step-1-amount').style.display='block'; getEl('recharge-step-2-method').style.display='none'; getEl('recharge-step-3-manual').style.display='none'; };
+        document.querySelectorAll('.amount-preset-btn').forEach(b => b.onclick = () => getEl('rechargeAmountInput').value = b.dataset.amount);
+        getEl('goToStep2Btn').onclick = () => {
+            finalRechargeAmt = parseFloat(getEl('rechargeAmountInput').value);
+            if(!finalRechargeAmt || finalRechargeAmt < 10) return alert('Min deposit is ₹10');
+            getEl('rechargeAmountConfirm').textContent = finalRechargeAmt;
+            getEl('recharge-step-1-amount').style.display='none'; getEl('recharge-step-2-method').style.display='block';
+        };
+        document.querySelectorAll('.payment-option-card input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() { document.querySelectorAll('.payment-option-card').forEach(c => c.classList.remove('active')); this.closest('.payment-option-card').classList.add('active'); });
+        });
+
+        getEl('proceedToPayActionBtn').onclick = () => {
+            const selectedMethod = document.querySelector('input[name="payType"]:checked').value;
+            if(selectedMethod === 'auto') {
+                if(appSettings.pgKeyId) {
+                    const options = {
+                        key: appSettings.pgKeyId, amount: finalRechargeAmt * 100, currency: "INR", name: appSettings.appName || "Platform", description: "Wallet Recharge",
+                        handler: async function (response) {
+                            showLoader(true);
+                            try {
+                                await update(ref(db, `users/${currentUser.uid}`), { balance: (userProfile.balance||0) + finalRechargeAmt });
+                                await push(ref(db, 'deposits'), { userId: currentUser.uid, amount: finalRechargeAmt, utr: response.razorpay_payment_id, paymentMethod: 'Razorpay Auto', status: 'completed', timestamp: serverTimestamp() });
+                                alert('Payment Successful! Amount added to Wallet.'); showSection('wallet-section');
+                            } catch(e) { alert("Error adding balance: " + e.message); } showLoader(false);
+                        }, prefill: { email: userProfile.email }, theme: { color: "#06b6d4" }
+                    };
+                    const rzp = new Razorpay(options); rzp.on('payment.failed', function (response){ alert("Payment Failed. Reason: " + response.error.description); }); rzp.open();
+                } else alert('Admin has not Setup Auto Payment Key yet. Please select Manual Transfer.');
+            } else if (selectedMethod === 'manual') {
+                getEl('recharge-step-2-method').style.display = 'none'; getEl('recharge-step-3-manual').style.display = 'block';
+                getEl('rechargeFinalAmount').textContent = finalRechargeAmt; getEl('rechargeUpiId').textContent = appSettings.upiDetails || 'admin@upi'; getEl('rechargeQrCodeImg').src = appSettings.qrCodeUrl || 'https://via.placeholder.com/150';
+            }
+        };
+
+        getEl('rechargeSubmitBtn').onclick = async () => {
+            const utr = getEl('rechargeUtrInput').value; if(!utr) return alert("Please enter UTR number.");
+            showLoader(true);
+            try { await push(ref(db, 'deposits'), { userId: currentUser.uid, amount: finalRechargeAmt, utr: utr, status: 'pending', paymentMethod: 'Manual UPI', timestamp: serverTimestamp() }); alert("Deposit requested! Admin will verify soon."); showSection('wallet-section'); } catch(e) {} showLoader(false);
+        };
+
+        /* --- Withdraw Trigger --- */
+        getEl('withdrawBtnEl').onclick = () => {
+            getEl('withdrawModalBalanceEl').textContent = `₹${(userProfile.winningCash || 0).toFixed(2)}`;
+            modals.withdraw.show();
+        };
+        
+        getEl('submitWithdrawRequestBtnEl').onclick = async () => {
+            const amt = parseFloat(getEl('withdrawAmountInputEl').value), details = getEl('withdrawMethodInputEl').value;
+            const min = appSettings.minWithdraw || 50;
+            if(!amt || amt < min) return alert(`Minimum withdrawal is ₹${min}`);
+            if(!details) return alert('Enter Bank or UPI details');
+            if(amt > (userProfile.winningCash||0)) return alert('Insufficient Winnings balance! You can only withdraw Winnings.');
+            showLoader(true);
+            try {
+                await update(ref(db, `users/${currentUser.uid}`), { winningCash: (userProfile.winningCash||0) - amt });
+                await push(ref(db, 'withdrawals'), { userId: currentUser.uid, amount: amt, method: 'Direct', methodDetails: {accountInfo: details}, status: 'pending', requestTimestamp: serverTimestamp() });
+                modals.withdraw.hide(); alert("Withdrawal Requested!"); showSection('wallet-section');
+            } catch(e) {} showLoader(false);
+        };
+
+        /* --- Transaction History Section --- */
+        async function loadWalletHistory() {
+            const historyList = getEl('walletHistoryListEl');
+            if(!currentUser) return;
+            historyList.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            
+            let transactions =[];
+            
+            try {
+                const depSnap = await get(ref(db, 'deposits'));
+                if (depSnap.exists()) {
+                    Object.values(depSnap.val()).forEach(d => {
+                        if (d.userId === currentUser.uid) transactions.push({ ...d, type: 'Deposit', time: d.timestamp || 0 });
+                    });
+                }
+                
+                const withSnap = await get(ref(db, 'withdrawals'));
+                if (withSnap.exists()) {
+                    Object.values(withSnap.val()).forEach(w => {
+                        if (w.userId === currentUser.uid) transactions.push({ ...w, type: 'Withdraw', time: w.requestTimestamp || 0 });
+                    });
+                }
+                
+                transactions.sort((a, b) => b.time - a.time);
+                historyList.innerHTML = '';
+                
+                if (transactions.length === 0) {
+                    historyList.innerHTML = '<div class="text-center py-4"><i class="bi bi-inbox fs-1 text-muted"></i><p class="text-muted small mt-2 fw-bold">No transactions yet.</p></div>';
+                    return;
+                }
+                
+                transactions.forEach(txn => {
+                    const isDeposit = txn.type === 'Deposit';
+                    const color = isDeposit ? '#10b981' : '#ef4444'; 
+                    const sign = isDeposit ? '+' : '-';
+                    const icon = isDeposit ? 'bi-arrow-down-left-circle-fill' : 'bi-arrow-up-right-circle-fill';
+                    
+                    let statusBadge = '';
+                    if (txn.status === 'completed' || txn.status === 'success') {
+                        statusBadge = '<span class="badge bg-success bg-opacity-25 text-success ms-2" style="font-size: 0.65rem;">Success</span>';
+                    } else if (txn.status === 'pending') {
+                        statusBadge = '<span class="badge bg-warning bg-opacity-25 text-warning ms-2" style="font-size: 0.65rem;">Pending</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-danger bg-opacity-25 text-danger ms-2" style="font-size: 0.65rem;">Failed</span>';
+                    }
+                    
+                    historyList.innerHTML += `
+                        <div class="glass-card p-3 mb-2 d-flex justify-content-between align-items-center" style="border-left: 4px solid ${color};">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi ${icon} fs-3" style="color: ${color};"></i>
+                                <div>
+                                    <h6 class="text-white fw-bold mb-0 m-0 d-flex align-items-center">${txn.type} ${statusBadge}</h6>
+                                    <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">${formatDate(txn.time)}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <h5 class="m-0 fw-bold" style="color: ${color};">${sign}₹${txn.amount}</h5>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+            } catch (error) {
+                historyList.innerHTML = '<p class="text-center text-danger small mt-3 fw-bold">Failed to load history.</p>';
+            }
+        }
+
+        getEl('notificationBtnEl').onclick = async (e) => {
+            e.preventDefault(); e.stopPropagation();
+            if(!currentUser) return alert('Please login to view notifications.');
+            const list = getEl('notificationsListEl'); const emptyMsg = getEl('notificationsEmptyMsgEl');
+            list.innerHTML = ''; emptyMsg.style.display = 'none'; showLoader(true);
+            let notifs =[];
+            try { const globalSnap = await get(ref(db, 'globalNotifications')); if(globalSnap.exists()) Object.values(globalSnap.val()).forEach(n => notifs.push(n)); } catch(err) {}
+            try { const userSnap = await get(ref(db, `users/${currentUser.uid}/notifications`)); if(userSnap.exists()) Object.values(userSnap.val()).forEach(n => notifs.push(n)); } catch(err) {}
+            try {
+                notifs.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+                if(notifs.length === 0) emptyMsg.style.display = 'block';
+                else notifs.forEach(n => { list.innerHTML += `<div class="glass-card p-3 mb-2 border-start border-4" style="border-left-color: var(--accent-cyan) !important;"><div class="d-flex justify-content-between align-items-start mb-1"><h6 class="text-white fw-bold mb-0">${n.title || 'Update'}</h6><span style="font-size: 0.7rem; color: var(--accent-cyan);">${formatDate(n.timestamp)}</span></div><p class="small text-muted m-0 mt-1" style="line-height:1.4;">${n.message}</p></div>`; });
+                getEl('notificationBadgeEl').style.display = 'none'; modals.notifications.show();
+            } catch(err) {} showLoader(false);
+        };
+
+        async function loadMatchHistory() {
+            const body = getEl('matchHistoryBodyEl'); 
+            body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            
+            try {
+                const snap = await get(ref(db, 'tournaments')); 
+                const allT = snap.val() || {}; 
+                let historyHTML = '';
+                
+                const myMatches = Object.entries(allT)
+                    .filter(([tid, t]) => t.registeredPlayers && t.registeredPlayers[currentUser.uid])
+                    .sort(([,a], [,b]) => (b.startTime||0) - (a.startTime||0));
+
+                if (myMatches.length === 0) {
+                    body.innerHTML = '<p class="text-center text-muted py-4">No matches played yet.</p>';
+                    return;
+                }
+
+                myMatches.forEach(([tid, t]) => {
+                    const myStats = t.registeredPlayers[currentUser.uid];
+                    let badgeColor = (t.status === 'completed' || t.status === 'result') ? 'bg-success' : (t.status === 'ongoing' ? 'bg-warning text-dark' : 'bg-primary');
+                    let statusText = t.status.toUpperCase();
+                    
+                    historyHTML += `
+                    <div class="glass-card p-3 mb-3 border-start border-4 border-info">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h6 class="fw-bold m-0 text-white">${t.name}</h6>
+                            <span class="badge ${badgeColor}" style="font-size:0.65rem;">${statusText}</span>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mt-2 pt-2 border-top border-secondary">
+                            <span>Kills: <strong class="text-white">${myStats.kills || 0}</strong></span>
+                            <span>Rank: <strong class="text-white">${myStats.rank || '-'}</strong></span>
+                            <span>Won: <strong class="text-success">₹${myStats.prize || 0}</strong></span>
+                        </div>
+                    </div>`;
+                });
+                body.innerHTML = historyHTML;
+            } catch(e) { body.innerHTML = '<p class="text-center text-danger">Error loading history.</p>'; }
+        }
+
+        // =========================================================
+        // 👇 DYNAMIC DEMO / REFERRAL LINK SYSTEM 👇
+        // =========================================================
+        function setupReferralSystem() {
+            // Fetch the dynamic demo link saved by the Admin Panel from localStorage
+            const APP_DOWNLOAD_LINK = localStorage.getItem('demo_link'); 
+            
+            // Check if link exists and is valid
+            if (APP_DOWNLOAD_LINK && APP_DOWNLOAD_LINK.trim() !== "") {
+                const myLink = `${APP_DOWNLOAD_LINK}/?ref=${currentUser.uid}`; 
+                getEl('myReferralLinkEl').textContent = myLink;
+            } else {
+                getEl('myReferralLinkEl').textContent = "Demo link not available";
+            }
+        }
+        // =========================================================
+
+        getEl('editNameBtnEl').onclick = () => { getEl('editNameInput').value = userProfile.displayName || ''; getEl('editPasswordInput').value = ''; modals.editName.show(); };
+        getEl('saveNameChangeBtn').onclick = async () => {
+            const newName = getEl('editNameInput').value.trim(); const newPass = getEl('editPasswordInput').value;
+            if(!newName) return alert('Name required.');
+            showLoader(true);
+            try {
+                await update(ref(db, `users/${currentUser.uid}`), { displayName: newName });
+                if(newPass.length > 0) { if(newPass.length < 6) return alert('Password min 6 chars'); await updatePassword(currentUser, newPass); alert("Profile and Password Updated!"); } else alert("Profile Updated!");
+                modals.editName.hide();
+            } catch(e) { alert("Error: You may need to logout and login again to change password."); } finally { showLoader(false); }
+        };
+
+        async function loadLeaderboard() {
+            const list = getEl('leaderboardListEl'); list.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+            try {
+                const snap = await get(ref(db, 'users')); const users = [];
+                snap.forEach(c => { const u=c.val(); if(u.leaderboardRank) users.push(u); });
+                users.sort((a,b) => a.leaderboardRank - b.leaderboardRank); list.innerHTML = '';
+                if(users.length === 0) list.innerHTML = '<p class="text-center text-muted py-3">No ranking available.</p>';
+                else { users.forEach((u, i) => { let trophy = i===0 ? '🏆' : (i===1 ? '🥈' : (i===2 ? '🥉' : `#${u.leaderboardRank}`));
+                    list.innerHTML += `<div class="d-flex align-items-center justify-content-between p-3 border-bottom border-glass" style="background: ${i===0?'rgba(250, 204, 21, 0.05)':'transparent'};"><div class="d-flex align-items-center gap-3"><h5 class="m-0 text-muted" style="width: 30px;">${trophy}</h5><img src="https://ui-avatars.com/api/?name=${u.displayName}&background=18181b&color=06b6d4&bold=true" style="width:40px; height:40px; border-radius:10px;"><h6 class="m-0 text-white fw-bold">${u.displayName}</h6></div><strong style="color: var(--accent-gold);">₹${u.leaderboardDisplayEarnings||0}</strong></div>`;
+                }); }
+            } catch(e) {}
+        }
+    </script>
+
+<!-- Referral Link Realtime Fix -->
+<script type="module">
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+try{
+  const app = getApp();
+  const db = getDatabase(app);
+  const linkRef = ref(db,"settings/demoLink");
+
+  onValue(linkRef,(snap)=>{
+    const link = snap.val();
+    if(!link) return;
+
+    const el = document.getElementById("myReferralLinkEl");
+    if(el){
+        el.textContent = link;
+        if(el.tagName === "A"){ el.href = link; }
+    }
+  });
+}catch(e){
+  console.log("Referral realtime listener error:",e);
+}
+</script>
+
+</body>
+</html>
