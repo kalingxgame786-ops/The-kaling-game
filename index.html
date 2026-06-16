@@ -228,10 +228,192 @@
         .accordion-button:focus { box-shadow: none !important; }
         .accordion-button::after { filter: invert(1) grayscale(100%) brightness(200%); }
         .accordion-item { border-radius: var(--radius-md) !important; margin-bottom: 12px; }
+        /* =========================================
+           GAMING SPLASH SCREEN
+        ========================================= */
+        #gamingSplashScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background-color: #000;
+            overflow: hidden;
+            animation: screenEntry 1s ease-out forwards;
+        }
+
+        @keyframes screenEntry {
+            0% { opacity: 0; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .splash-exit {
+            animation: screenExit 0.8s forwards ease-in-out !important;
+        }
+
+        @keyframes screenExit {
+            0% { opacity: 1; filter: brightness(1); }
+            40% { filter: brightness(1.3); }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        .splash-fullscreen-img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .splash-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .particle {
+            position: absolute;
+            background: #ff4d4d;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ff4d4d, 0 0 12px #ff1a1a;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* UNIFIED OVERLAY SYSTEM (ABSOLUTE POSITIONING) */
+        .splash-overlay-bar-container {
+            position: absolute;
+            bottom: 18%; /* Estimated original bar position */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            max-width: 350px;
+            height: 8px; /* Original bar height */
+            background: #0a0a0c;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+            z-index: 5;
+        }
+
+        .splash-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff0000 0%, #ff4d4d 50%, #ff0000 100%);
+            background-size: 200% 100%;
+            animation: fireFill 2s infinite linear;
+            border-radius: 4px;
+            box-shadow: 0 0 15px #ff0000, 0 0 30px rgba(255,0,0,0.6);
+            position: relative;
+            transition: width 0.1s linear;
+        }
+
+        @keyframes fireFill {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+
+
+        .blood-drop {
+            position: absolute;
+            bottom: 0px;
+            width: 2px;
+            background: #ff0000;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #ff0000;
+            animation: bloodDrip 1.2s ease-in forwards;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes bloodDrip {
+            0% { height: 0px; opacity: 1; transform: translateY(0); }
+            30% { height: 12px; opacity: 1; transform: translateY(6px); }
+            100% { height: 2px; opacity: 0; transform: translateY(45px); }
+        }
+
+
     </style>
 </head>
 
 <body>
+    <!-- Gaming Splash Screen -->
+    <div id="gamingSplashScreen">
+        <!-- Background -->
+        <img src="splash.jpeg" class="splash-fullscreen-img" alt="Background">
+        
+        <!-- Particles -->
+        <div class="splash-particles" id="splashParticles"></div>
+
+        <!-- Animated Loading Bar -->
+        <div class="splash-overlay-bar-container">
+            <div class="splash-fill" id="splashProgressBar"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const splashScreen = document.getElementById('gamingSplashScreen');
+            const progressBar = document.getElementById('splashProgressBar');
+            const particlesContainer = document.getElementById('splashParticles');
+            
+            // Generate very light floating ember particles
+            for(let i=0; i<30; i++) {
+                let p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.width = Math.random() * 3 + 2 + 'px';
+                p.style.height = p.style.width;
+                p.style.animationDuration = Math.random() * 4 + 3 + 's';
+                p.style.animationDelay = Math.random() * 2 + 's';
+                particlesContainer.appendChild(p);
+            }
+
+            // Sync progress bar and percentage
+            let progress = 0;
+            const duration = 4000; // 4 seconds total load time
+            const interval = 30; // update every 30ms
+            const step = (100 / (duration / interval));
+            let dropCounter = 0;
+
+            const loadingInterval = setInterval(() => {
+                progress += step;
+                if(progress >= 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+
+                // Blood dropping animation
+                dropCounter++;
+                if(dropCounter % 8 === 0 && progress > 5 && progress < 100) {
+                    let drop = document.createElement('div');
+                    drop.className = 'blood-drop';
+                    drop.style.left = (Math.random() * 95) + '%';
+                    progressBar.appendChild(drop);
+                    setTimeout(() => { if(drop.parentNode) drop.remove() }, 1200);
+                }
+                
+                // After loading reaches 100%: fade splash screen out
+                if(progress >= 100) {
+                    clearInterval(loadingInterval);
+                    // Add bright glow at the end
+                    progressBar.style.boxShadow = '0 0 20px #ff1a1a, 0 0 40px #ff1a1a';
+                    
+                    setTimeout(() => {
+                        splashScreen.classList.add('splash-exit');
+                        setTimeout(() => {
+                            splashScreen.style.display = 'none';
+                        }, 800);
+                    }, 200); // slight pause to show 100% glow
+                }
+            }, interval);
+        });
+    </script>
+
     <!-- Global Loader -->
     <div id="globalLoaderEl" style="position: fixed; inset: 0; background: rgba(9, 9, 11, 0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
         <div class="spinner-border" style="color: var(--accent-cyan); width: 3rem; height: 3rem;" role="status"></div>
