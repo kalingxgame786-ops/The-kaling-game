@@ -358,10 +358,15 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('splashShown')) {
+                const splashScreen = document.getElementById('gamingSplashScreen');
+                if (splashScreen) splashScreen.style.display = 'none';
+                return;
+            }
             const splashScreen = document.getElementById('gamingSplashScreen');
             const progressBar = document.getElementById('splashProgressBar');
             const particlesContainer = document.getElementById('splashParticles');
-            
+
             // Generate very light floating ember particles
             for(let i=0; i<30; i++) {
                 let p = document.createElement('div');
@@ -383,30 +388,32 @@
 
             const loadingInterval = setInterval(() => {
                 progress += step;
-                if(progress >= 100) progress = 100;
-                
+                if (progress >= 100) progress = 100;
+
                 progressBar.style.width = progress + '%';
 
                 // Blood dropping animation
                 dropCounter++;
-                if(dropCounter % 8 === 0 && progress > 5 && progress < 100) {
+                if (dropCounter % 8 === 0 && progress > 5 && progress < 100) {
                     let drop = document.createElement('div');
                     drop.className = 'blood-drop';
                     drop.style.left = (Math.random() * 95) + '%';
                     progressBar.appendChild(drop);
-                    setTimeout(() => { if(drop.parentNode) drop.remove() }, 1200);
+                    setTimeout(() => { if (drop.parentNode) drop.remove(); }, 1200);
                 }
-                
+
                 // After loading reaches 100%: fade splash screen out
-                if(progress >= 100) {
+                if (progress >= 100) {
                     clearInterval(loadingInterval);
                     // Add bright glow at the end
                     progressBar.style.boxShadow = '0 0 20px #ff1a1a, 0 0 40px #ff1a1a';
-                    
+
                     setTimeout(() => {
                         splashScreen.classList.add('splash-exit');
                         setTimeout(() => {
                             splashScreen.style.display = 'none';
+                            // Mark splash as shown for this session
+                            sessionStorage.setItem('splashShown', 'true');
                         }, 800);
                     }, 200); // slight pause to show 100% glow
                 }
