@@ -507,6 +507,26 @@
             <p id="noContestsMessageEl" class="text-muted text-center small fw-bold mt-3" style="display: none;">No upcoming matches joined.</p>
         </section>
 
+        <!-- ================= FREE FIRE MODES SECTION ================= -->
+        <section id="freefireModesSection" class="section">
+            <h2 class="section-title"><i class="bi bi-controller" style="color: var(--accent-cyan);"></i> Select Mode</h2>
+            <div class="row g-3 mb-4">
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/ffffff?text=ALL+MATCHES');" onclick="window.filterFFMode(null, null)"><div class="game-card-new-overlay"><span>ALL MATCHES</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/06b6d4?text=FULL+MAP');" onclick="window.filterFFMode('Full Map', 'Squad')"><div class="game-card-new-overlay"><span>FULL MAP</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/facc15?text=SURVIVAL');" onclick="window.filterFFMode('Survival', 'Solo')"><div class="game-card-new-overlay"><span>SURVIVAL</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/8b5cf6?text=FULL+MAP+2');" onclick="window.filterFFMode('Full Map', 'Duo')"><div class="game-card-new-overlay"><span>FULL MAP 2</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/ef4444?text=LONE+WOLF');" onclick="window.filterFFMode('Lone Wolf', 'Solo')"><div class="game-card-new-overlay"><span>LONE WOLF</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/10b981?text=CS+1V1');" onclick="window.filterFFMode('Clash Squad', 'Solo')"><div class="game-card-new-overlay"><span>CS 1V1</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/3b82f6?text=CS+ONETAP');" onclick="window.filterFFMode('Clash Squad', 'Solo')"><div class="game-card-new-overlay"><span>CS ONETAP</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/f97316?text=LW+2V2');" onclick="window.filterFFMode('Lone Wolf', 'Duo')"><div class="game-card-new-overlay"><span>LW 2V2</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/ec4899?text=CS+2V2');" onclick="window.filterFFMode('Clash Squad', 'Duo')"><div class="game-card-new-overlay"><span>CS 2V2</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/14b8a6?text=LW+10');" onclick="window.filterFFMode('Lone Wolf', 'Solo')"><div class="game-card-new-overlay"><span>LW ₹10</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/6366f1?text=LW+LOSS');" onclick="window.filterFFMode('Lone Wolf', 'Solo')"><div class="game-card-new-overlay"><span>LW LOSS</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/8b5cf6?text=NIGHT+MODE+1');" onclick="window.filterFFMode('Night Mode', 'Squad')"><div class="game-card-new-overlay"><span>NIGHT MODE 1</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/ef4444?text=CS+4V4');" onclick="window.filterFFMode('Clash Squad', 'Squad')"><div class="game-card-new-overlay"><span>CS 4V4</span></div></div></div>
+            </div>
+        </section>
+
         <!-- ================= TOURNAMENTS SECTION ================= -->
         <section id="tournaments-section" class="section">
             <div class="tournament-tabs"> 
@@ -846,7 +866,12 @@
         const auth = getAuth(app);
         const getEl = (id) => document.getElementById(id);
 
-        let currentUser = null, userProfile = {}, currentSectionId = 'login-section', appSettings = {}, swiperInstance, currentTournamentGameId = null;
+        let currentUser = null, userProfile = {}, currentSectionId = 'login-section', appSettings = {}, swiperInstance, currentTournamentGameId = null, currentCategory = null, currentMode = null;
+        window.filterFFMode = (category, mode) => {
+            currentCategory = category;
+            currentMode = mode;
+            showSection('tournaments-section');
+        };
 
         // Initialize Modals
         let modals = {};
@@ -903,6 +928,7 @@
             getEl('headerGameTitleEl').style.display = showBack ? 'block' : 'none';
             
             if (sectionId === 'tournaments-section' && currentTournamentGameId) getEl('headerGameTitleEl').textContent = appSettings?.games?.[currentTournamentGameId]?.name || 'Matches';
+            else if (sectionId === 'freefireModesSection') getEl('headerGameTitleEl').textContent = 'Free Fire Modes';
             else if (sectionId === 'recharge-section') getEl('headerGameTitleEl').textContent = 'Add Funds';
             else if (sectionId === 'support-section') getEl('headerGameTitleEl').textContent = 'Support';
             else if (sectionId === 'referral-section') getEl('headerGameTitleEl').textContent = 'Refer & Earn';
@@ -1133,7 +1159,16 @@
             try { const snap = await get(ref(db, 'games')); const games = Object.entries(snap.val() || {}); list.innerHTML = '';
                 if(!appSettings.games) appSettings.games = {};
                 if(games.length > 0) { games.forEach(([id, g]) => { appSettings.games[id] = {name: g.name}; list.innerHTML += `<div class="col-6"><div class="game-card-new" style="background-image:url('${g.imageUrl}')" data-id="${id}"><div class="game-card-new-overlay"><span>${g.name}</span></div></div></div>`; });
-                    list.querySelectorAll('.game-card-new').forEach(c => c.onclick = () => { currentTournamentGameId = c.dataset.id; showSection('tournaments-section'); });
+                    list.querySelectorAll('.game-card-new').forEach(c => c.onclick = () => { 
+                        currentTournamentGameId = c.dataset.id; 
+                        currentCategory = null;
+                        currentMode = null;
+                        if (appSettings.games[currentTournamentGameId].name.toLowerCase().includes("free fire")) {
+                            showSection('freefireModesSection');
+                        } else {
+                            showSection('tournaments-section'); 
+                        }
+                    });
                 }
             } catch(e) {}
         }
@@ -1150,8 +1185,15 @@
             try { 
                 const snap = await get(query(ref(db, 'tournaments'), orderByChild('gameId'), equalTo(gameId)));
                 const tArray = Object.entries(snap.val() || {}).filter(([,t]) => {
-                    if (status === 'completed') return t.status === 'completed' || t.status === 'result';
-                    return t.status === status;
+                    let matchStatus = false;
+                    if (status === 'completed') matchStatus = (t.status === 'completed' || t.status === 'result');
+                    else matchStatus = (t.status === status);
+                    
+                    let matchCategoryMode = true;
+                    if (currentCategory && currentMode) {
+                        matchCategoryMode = (t.category === currentCategory && t.mode === currentMode);
+                    }
+                    return matchStatus && matchCategoryMode;
                 });
                 
                 if (status === 'completed') { tArray.sort(([,a],[,b]) => (b.startTime||0) - (a.startTime||0)); } 
