@@ -615,6 +615,25 @@
         }
         .tournament-card-content { padding: 15px; }
 
+        /* PREMIUM ESPORTS CARD CSS UPGRADE */
+        .tc-top-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 8px; z-index: 2; }
+        .tc-badge-mode { background: var(--bg-card2); color: var(--text-main); font-size: 0.75rem; padding: 4px 10px; border-radius: var(--r-sm); border: 1px solid var(--border); font-weight: 700; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .tc-badge-status { font-size: 0.75rem; padding: 4px 10px; border-radius: var(--r-sm); font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .tc-badge-status.upcoming { background: var(--grad-gold); color: #000; border: none; }
+        .tc-badge-status.ongoing { background: var(--grad-red); color: #fff; border: none; }
+        .tc-badge-status.completed, .tc-badge-status.result { background: rgba(255,255,255,0.1); color: var(--text-muted); border: 1px solid var(--border); }
+        
+        .tc-id-tag { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; display: inline-block; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;}
+        
+        .tc-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.03); }
+        .tc-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .tc-stat span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .tc-stat strong { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+        
+        .tc-progress-section .tc-progress-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+        .tc-progress-section .tc-progress-header strong { color: var(--text-main); font-weight: 700; }
+        /* END PREMIUM ESPORTS CSS */
+
         .tournament-card-tags {
             position: absolute;
             top: 10px; left: 10px;
@@ -1937,16 +1956,40 @@
                 btn = `<button class="btn-custom btn-outline-custom" disabled>Closed</button>`;
             }
 
+            const pCent = maxP > 0 ? Math.min(100, Math.round((regC / maxP) * 100)) : 0;
+            const tDate = new Date(t.startTime).toLocaleDateString('en-GB');
+            const tTime = new Date(t.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
             card.innerHTML = `<img src="${t.bannerUrl || 'https://via.placeholder.com/400x200/18181b/06b6d4?text=Match'}" class="tournament-banner-image">
+            <div class="tc-top-badges">
+                <span class="tc-badge-mode">${t.mode||'Solo'}</span>
+                <span class="tc-badge-status ${t.status}">${t.status.toUpperCase()}</span>
+            </div>
             <div class="tournament-card-content">
-                <div class="tournament-card-tags"><span>${t.mode||'Solo'}</span>${t.map?`<span>${t.map}</span>`:''}</div>
-                <div class="tournament-card-header"><h3 class="tournament-card-title m-0">${t.name}</h3><div class="tournament-card-timer">${t.status==='upcoming'?getTimeRemaining(t.startTime):t.status}</div></div>
-                <div class="tournament-card-info">
-                    <div class="info-item border-end border-secondary"><span>Prize Pool</span><strong class="prize-text">₹${t.prizePool||0}</strong></div>
-                    <div class="info-item border-end border-secondary"><span>Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
-                    <div class="info-item"><span>Entry</span><strong>${eFee>0?'₹'+eFee:'Free'}</strong></div>
+                ${t.tournamentId ? `<div class="tc-id-tag">ID: ${t.tournamentId}</div>` : ''}
+                <div class="tournament-card-header mb-3">
+                    <h3 class="tournament-card-title m-0">${t.name}</h3>
                 </div>
-                ${maxP>0 ? `<div class="progress-box"><div class="progress-text"><span>Spots</span><span>${spotsL} Left</span></div><div class="progress"><div class="progress-bar" style="width:${(regC/maxP)*100}%"></div></div></div>` : ''}
+                
+                <div class="tc-stats-grid mb-3">
+                    <div class="tc-stat"><span>Date</span><strong>${tDate}</strong></div>
+                    <div class="tc-stat"><span>Time</span><strong>${tTime}</strong></div>
+                    ${t.map ? `<div class="tc-stat"><span>Map</span><strong>${t.map}</strong></div>` : ''}
+                    <div class="tc-stat"><span>Prize Pool</span><strong class="text-warning">₹${t.prizePool||0}</strong></div>
+                    <div class="tc-stat"><span>Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
+                    <div class="tc-stat"><span>Entry</span><strong>${eFee>0?'₹'+eFee:'Free'}</strong></div>
+                </div>
+
+                ${maxP>0 ? `
+                <div class="tc-progress-section mb-3">
+                    <div class="tc-progress-header">
+                        <span>Joined: <strong>${regC}</strong></span>
+                        <span>Remaining: <strong>${spotsL}</strong></span>
+                        <span>Total: <strong>${maxP}</strong></span>
+                    </div>
+                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1);"><div class="progress-bar bg-danger" style="width:${pCent}%"></div></div>
+                    <div class="text-end text-muted mt-1" style="font-size: 0.7rem;">${pCent}% Filled</div>
+                </div>` : ''}
                 <div class="d-flex gap-2"><button class="btn-custom btn-outline-custom flex-fill btn-details" data-id="${id}">Details</button>${btn}</div>${ipBtn}
             </div>`;
             
