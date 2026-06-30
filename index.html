@@ -628,7 +628,7 @@
         .tc-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.03); }
         .tc-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .tc-stat span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-        .tc-stat strong { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+        .tc-stat strong { font-size: 0.85rem; font-weight: 700; color: var(--text-main); line-height: 1.35; }
         
         .tc-progress-section .tc-progress-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
         .tc-progress-section .tc-progress-header strong { color: var(--text-main); font-weight: 700; }
@@ -2109,12 +2109,12 @@
                 </div>
                 
                 <div class="tc-stats-grid mb-3">
-                    <div class="tc-stat"><span>Date</span><strong>${tDate}</strong></div>
-                    <div class="tc-stat"><span>Time</span><strong>${tTime}</strong></div>
-                    ${t.map ? `<div class="tc-stat"><span>Map</span><strong>${t.map}</strong></div>` : ''}
-                    <div class="tc-stat"><span>Prize Pool</span><strong class="text-warning">₹${t.prizePool||0}</strong></div>
-                    <div class="tc-stat"><span>Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
-                    <div class="tc-stat"><span>Entry</span><strong>${eFee>0?'₹'+eFee:'Free'}</strong></div>
+                    <div class="tc-stat"><span>👑 Entry Fee</span><strong style="color:#10b981;">${eFee>0?'₹'+eFee:'Free'}</strong></div>
+                    <div class="tc-stat"><span>🏆 Prize Pool</span><strong class="text-warning">₹${t.prizePool||0}</strong></div>
+                    <div class="tc-stat"><span>🎯 Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
+                    <div class="tc-stat"><span>🕐 Time</span><strong style="color:var(--orange);">${tDate}<br>${tTime}</strong></div>
+                    <div class="tc-stat"><span>🎮 Type</span><strong>${t.mode||'Solo'}</strong></div>
+                    <div class="tc-stat"><span>🗺️ Map</span><strong>${t.map||'N/A'}</strong></div>
                 </div>
 
                 ${maxP>0 ? `
