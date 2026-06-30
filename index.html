@@ -625,18 +625,13 @@
         
         .tc-id-tag { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; display: inline-block; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;}
         
-        .tc-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(0,0,0,0.2); border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.06); overflow: hidden; }
-        .tc-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 12px 6px; }
-        .tc-stat span { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; font-weight: 700; }
-        .tc-stat strong { font-size: 0.88rem; font-weight: 800; color: var(--text-main); line-height: 1.3; }
-        .tc-stat-divider { border-left: 1px solid rgba(255,255,255,0.07); }
-        .tc-stat-row2 { border-top: 1px solid rgba(255,255,255,0.07); }
+        .tc-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.03); }
+        .tc-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .tc-stat span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .tc-stat strong { font-size: 0.85rem; font-weight: 700; color: var(--text-main); line-height: 1.35; }
         
         .tc-progress-section .tc-progress-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
         .tc-progress-section .tc-progress-header strong { color: var(--text-main); font-weight: 700; }
-
-        .tc-title-header { display: block; width: 100%; margin-bottom: 10px; }
-        .tc-title-header .tc-title { width: 100%; font-size: 1rem; font-weight: 800; color: #fff; text-transform: uppercase; line-height: 1.3; }
         /* END PREMIUM ESPORTS CSS */
 
         .tournament-card-tags {
@@ -1072,6 +1067,86 @@
             30%  { height: 12px; opacity: 1; transform: translateY(6px); }
             100% { height: 2px;  opacity: 0; transform: translateY(45px); }
         }
+        /* ══════════════════════════════════════════
+           CHOOSE SLOT OVERLAYS
+        ══════════════════════════════════════════ */
+        .fs-overlay {
+            position: fixed; inset: 0;
+            background: var(--bg-base);
+            z-index: 1050;
+            display: flex; flex-direction: column;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .fs-overlay.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .fs-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px;
+            background: rgba(13,13,15,0.92);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .fs-back-btn {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--border);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer; transition: all 0.2s;
+        }
+        .fs-back-btn:active { transform: scale(0.9); }
+        .fs-title { font-weight: 800; font-size: 1.1rem; color: white; margin: 0; line-height: 1.2; text-align: center; }
+        .fs-subtitle { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .fs-body { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 100px; }
+        
+        .slot-legend { display: flex; gap: 12px; margin-bottom: 16px; overflow-x: auto; white-space: nowrap; padding-bottom: 4px; }
+        .legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .legend-box { width: 14px; height: 14px; border-radius: 4px; }
+        .legend-box.avail { background: rgba(16,185,129,0.15); border: 1px solid #10b981; }
+        .legend-box.occ { background: rgba(239,68,68,0.15); border: 1px solid #ef4444; }
+        .legend-box.sel { background: var(--grad-red); box-shadow: var(--shadow-red); }
+        .legend-box.dis { background: rgba(255,255,255,0.05); border: 1px solid var(--border); }
+        
+        .slot-grid { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .slot-grid th { position: sticky; top: -16px; background: var(--bg-base); z-index: 10; padding: 8px 4px; font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        .team-col { text-align: left; width: 60px; padding-left: 8px !important; }
+        .slot-col { text-align: center; }
+        .team-row td { background: rgba(255,255,255,0.02); padding: 8px 4px; }
+        .team-row td:first-child { border-radius: var(--r-md) 0 0 var(--r-md); padding-left: 12px; font-weight: 800; font-size: 0.85rem; color: white; }
+        .team-row td:last-child { border-radius: 0 var(--r-md) var(--r-md) 0; padding-right: 8px; }
+        
+        .slot-box {
+            width: 100%; aspect-ratio: 1; max-width: 48px; margin: 0 auto;
+            border-radius: var(--r-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: 800;
+            cursor: pointer; transition: all 0.2s; user-select: none;
+        }
+        .slot-box.avail { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.4); color: #10b981; }
+        .slot-box.occ { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; cursor: not-allowed; opacity: 0.7; }
+        .slot-box.sel { background: var(--grad-red); border: none; color: white; box-shadow: var(--shadow-red); animation: pop 0.2s ease; }
+        .slot-box.dis { background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-dim); cursor: not-allowed; }
+        @keyframes pop { 0% { transform: scale(0.9); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
+        .fs-bottom-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #111114; border-top: 1px solid var(--border);
+            padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: var(--shadow-nav); z-index: 1060;
+        }
+        .fs-summary { display: flex; flex-direction: column; }
+        .fs-summary-title { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .fs-summary-value { font-size: 1.1rem; color: white; font-weight: 800; margin-top: 2px; }
+        .btn-fs-next { flex: 1; max-width: 160px; margin-left: 16px; }
+        .btn-fs-next:disabled { background: rgba(255,255,255,0.1); color: var(--text-dim); box-shadow: none; cursor: not-allowed; transform: none; }
     </style>
 </head>
 
@@ -1575,13 +1650,70 @@
         </div>
     </div>
 
+    <!-- ================= FULL-SCREEN OVERLAYS (Choose Slot Flow) ================= -->
+    <div id="chooseSlotOverlay" class="fs-overlay">
+        <div class="fs-header">
+            <button class="fs-back-btn" id="csBackBtn"><i class="bi bi-x-lg"></i></button>
+            <div class="text-center">
+                <h3 class="fs-title">Choose Your Slot</h3>
+                <span class="fs-subtitle" id="csSubtitle">Tournament Name</span>
+            </div>
+            <div style="width: 36px;"></div> <!-- Spacer for center alignment -->
+        </div>
+        <div class="fs-body" id="csBody">
+            <div class="slot-legend">
+                <div class="legend-item"><div class="legend-box avail"></div>Available</div>
+                <div class="legend-item"><div class="legend-box sel"></div>Selected</div>
+                <div class="legend-item"><div class="legend-box occ"></div>Occupied</div>
+            </div>
+            <div id="csAlertContainer"></div>
+            <table class="slot-grid" id="csGrid">
+                <!-- Dynamically generated -->
+            </table>
+        </div>
+        <div class="fs-bottom-bar">
+            <div class="fs-summary">
+                <span class="fs-summary-title">Entry Fee</span>
+                <span class="fs-summary-value" id="csFeeDisplay">₹0</span>
+            </div>
+            <div class="fs-summary ps-3 border-start border-secondary">
+                <span class="fs-summary-title">Selected</span>
+                <span class="fs-summary-value" id="csCountDisplay">0/0</span>
+            </div>
+            <button class="btn-custom btn-primary-gradient btn-fs-next" id="csNextBtn" disabled>NEXT</button>
+        </div>
+    </div>
+
+    <div id="playerDetailsOverlay" class="fs-overlay">
+        <div class="fs-header">
+            <button class="fs-back-btn" id="pdBackBtn"><i class="bi bi-arrow-left-short"></i></button>
+            <div class="text-center">
+                <h3 class="fs-title">Player Details</h3>
+                <span class="fs-subtitle" id="pdSubtitle">Enter Game Info</span>
+            </div>
+            <div style="width: 36px;"></div>
+        </div>
+        <div class="fs-body">
+            <div id="playerDetailsInputsContainer">
+                <!-- Dynamically generated using existing form structure -->
+            </div>
+        </div>
+        <div class="fs-bottom-bar">
+            <div class="fs-summary">
+                <span class="fs-summary-title">Total Fee</span>
+                <span class="fs-summary-value" id="pdFeeDisplay">₹0</span>
+            </div>
+            <button class="btn-custom btn-primary-gradient btn-fs-next" id="pdConfirmBtn">Confirm & Pay</button>
+        </div>
+    </div>
+
     <!-- Firebase & Logic Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getDatabase, ref, get, set, update, push, query, orderByChild, equalTo, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        import { getDatabase, ref, get, set, update, push, query, orderByChild, equalTo, onValue, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
         import { getAuth, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -1972,17 +2104,17 @@
             </div>
             <div class="tournament-card-content">
                 ${t.tournamentId ? `<div class="tc-id-tag">ID: ${t.tournamentId}</div>` : ''}
-                <div class="tc-title-header mb-3">
-                    <h3 class="tc-title m-0">${t.name}</h3>
+                <div class="tournament-card-header mb-3">
+                    <h3 class="tournament-card-title m-0">${t.name}</h3>
                 </div>
                 
                 <div class="tc-stats-grid mb-3">
                     <div class="tc-stat"><span>👑 Entry Fee</span><strong style="color:#10b981;">${eFee>0?'₹'+eFee:'Free'}</strong></div>
-                    <div class="tc-stat tc-stat-divider"><span>🏆 Prize Pool</span><strong style="color:var(--gold-light);">₹${t.prizePool||0}</strong></div>
-                    <div class="tc-stat tc-stat-divider"><span>🎯 Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
-                    <div class="tc-stat tc-stat-row2"><span>🕒 Time</span><strong style="color:#FF6B35;font-size:0.75rem;">${tDate}<br>${tTime}</strong></div>
-                    <div class="tc-stat tc-stat-row2 tc-stat-divider"><span>🎮 Type</span><strong>${t.mode||'Solo'}</strong></div>
-                    <div class="tc-stat tc-stat-row2 tc-stat-divider"><span>🗺 Map</span><strong>${(t.map||'N/A').toUpperCase()}</strong></div>
+                    <div class="tc-stat"><span>🏆 Prize Pool</span><strong class="text-warning">₹${t.prizePool||0}</strong></div>
+                    <div class="tc-stat"><span>🎯 Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
+                    <div class="tc-stat"><span>🕐 Time</span><strong style="color:var(--orange);">${tDate}<br>${tTime}</strong></div>
+                    <div class="tc-stat"><span>🎮 Type</span><strong>${t.mode||'Solo'}</strong></div>
+                    <div class="tc-stat"><span>🗺️ Map</span><strong>${t.map||'N/A'}</strong></div>
                 </div>
 
                 ${maxP>0 ? `
@@ -1999,38 +2131,7 @@
             </div>`;
             
             card.querySelector('.btn-join')?.addEventListener('click', e => { 
-                getEl('joinTournamentIdInput').value = id; 
-                getEl('joinFeeDisplayEl').textContent = `₹${eFee}`; 
-                
-                let mode = (t.mode || 'Solo').toLowerCase();
-                let playerCount = 1; 
-                if (mode.includes('duo')) playerCount = 2;
-                else if (mode.includes('squad')) playerCount = 4;
-
-                let inputsHtml = '';
-                for(let i=1; i<=playerCount; i++) {
-                    let isRequired = i === 1 ? 'required' : '';
-                    let optionalTag = i > 1 ? '<span style="font-size: 0.65rem; color: var(--text-muted); float: right;">(Optional)</span>' : '';
-                    inputsHtml += `
-                        <div class="p-3 mb-3" style="background: rgba(0,0,0,0.3); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
-                            <h6 class="text-white mb-3 fw-bold" style="font-size: 0.85rem; text-transform: uppercase;">
-                                <i class="bi bi-person-fill" style="color: var(--accent-cyan);"></i> ${playerCount > 1 ? `Player ${i} Details` : 'Player Details'}
-                                ${optionalTag}
-                            </h6>
-                            <div class="mb-3">
-                                <label class="form-label">In-Game Name</label>
-                                <input type="text" class="form-control player-name-input" placeholder="Enter Game Name" ${isRequired}>
-                            </div>
-                            <div class="mb-1">
-                                <label class="form-label">Game UID</label>
-                                <input type="number" class="form-control player-uid-input" placeholder="Enter UID" ${isRequired}>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                getEl('dynamicPlayerInputsContainer').innerHTML = inputsHtml;
-                modals.join.show(); 
+                ArenaChooseSlot.open(id, t, eFee);
             });
 
             card.querySelector('.btn-details')?.addEventListener('click', e => { 
@@ -2133,6 +2234,296 @@
                 showLoader(false); 
             }
         };
+
+        /* --- Choose Slot Full-Screen Flow --- */
+        const ArenaChooseSlot = (function() {
+            let currentTournamentId = null;
+            let currentTournamentData = null;
+            let entryFee = 0;
+            let slotConfig = { teamCount: 0, playersPerTeam: 0 };
+            let slotsListenerRef = null;
+            let occupiedSlots = {};
+            let selectedSlots = []; // Array of {team, pos, key}
+            let selectedTeam = null;
+
+            const positionLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+            function deriveSlotConfig(t) {
+                let tc = parseInt(t.teamCount);
+                let ppt = parseInt(t.playersPerTeam);
+                if (!tc || !ppt) {
+                    const mode = (t.mode || 'Solo').toLowerCase();
+                    if (mode.includes('duo')) {
+                        if (mode.includes('lone wolf')) { tc = 2; ppt = 2; }
+                        else if (mode.includes('cs') || mode.includes('clash')) { tc = 2; ppt = 2; }
+                        else { tc = 24; ppt = 2; }
+                    } else if (mode.includes('squad')) {
+                        if (mode.includes('cs') || mode.includes('clash')) { tc = 2; ppt = 4; }
+                        else { tc = 12; ppt = 4; }
+                    } else {
+                        // Solo
+                        tc = 48; ppt = 1;
+                    }
+                }
+                return { teamCount: Math.min(tc, 100), playersPerTeam: Math.min(ppt, 6) };
+            }
+
+            function openScreen(tournamentId, tournamentData, fee) {
+                currentTournamentId = tournamentId;
+                currentTournamentData = tournamentData;
+                entryFee = fee;
+                slotConfig = deriveSlotConfig(tournamentData);
+                selectedSlots = [];
+                selectedTeam = null;
+                occupiedSlots = {};
+
+                getEl('csSubtitle').textContent = `${tournamentData.name || 'Tournament'} • ${tournamentData.mode || 'Solo'}`;
+                getEl('csFeeDisplay').textContent = `₹${fee}`;
+                updateBottomBar();
+                getEl('csAlertContainer').innerHTML = '';
+
+                renderGrid();
+                getEl('chooseSlotOverlay').classList.add('active');
+
+                // Realtime slots listener
+                slotsListenerRef = ref(db, `tournaments/${currentTournamentId}/slots`);
+                onValue(slotsListenerRef, (snap) => {
+                    occupiedSlots = snap.val() || {};
+                    // Auto-deselect if someone else took our selected slot
+                    let deselected = false;
+                    selectedSlots = selectedSlots.filter(s => {
+                        if (occupiedSlots[s.key]) { deselected = true; return false; }
+                        return true;
+                    });
+                    if (deselected) {
+                        showAlert('A slot you selected was just booked by someone else!', 'danger');
+                        if (selectedSlots.length === 0) selectedTeam = null;
+                        updateBottomBar();
+                    }
+                    updateGridUI();
+                });
+            }
+
+            function closeScreens() {
+                if (slotsListenerRef) { off(slotsListenerRef); slotsListenerRef = null; }
+                getEl('chooseSlotOverlay').classList.remove('active');
+                getEl('playerDetailsOverlay').classList.remove('active');
+                currentTournamentId = null;
+            }
+
+            function showAlert(msg, type='warning') {
+                const ac = getEl('csAlertContainer');
+                ac.innerHTML = `<div class="alert alert-${type} py-2 px-3 small fw-bold mb-3 border-0" style="background:rgba(239,68,68,0.1); color:#ef4444;">${msg}</div>`;
+                setTimeout(() => ac.innerHTML = '', 3000);
+            }
+
+            function renderGrid() {
+                const grid = getEl('csGrid');
+                let html = '<thead><tr><th class="team-col">Team</th>';
+                for (let i = 0; i < slotConfig.playersPerTeam; i++) {
+                    html += `<th class="slot-col">${positionLetters[i]}</th>`;
+                }
+                html += '</tr></thead><tbody>';
+
+                for (let t = 1; t <= slotConfig.teamCount; t++) {
+                    html += `<tr class="team-row"><td class="team-col">${t}</td>`;
+                    for (let p = 0; p < slotConfig.playersPerTeam; p++) {
+                        const posLetter = positionLetters[p];
+                        const slotKey = `${t}_${posLetter}`;
+                        html += `<td class="slot-col"><div class="slot-box avail" data-key="${slotKey}" data-team="${t}" data-pos="${posLetter}">${posLetter}</div></td>`;
+                    }
+                    html += '</tr>';
+                }
+                html += '</tbody>';
+                grid.innerHTML = html;
+
+                grid.querySelectorAll('.slot-box').forEach(box => {
+                    box.onclick = () => handleSlotClick(box);
+                });
+                updateGridUI();
+            }
+
+            function updateGridUI() {
+                const grid = getEl('csGrid');
+                grid.querySelectorAll('.slot-box').forEach(box => {
+                    const key = box.dataset.key;
+                    box.className = 'slot-box'; // reset
+                    if (occupiedSlots[key]) {
+                        box.classList.add('occ');
+                        box.innerHTML = '<i class="bi bi-lock-fill"></i>';
+                    } else if (selectedSlots.find(s => s.key === key)) {
+                        box.classList.add('sel');
+                        box.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    } else {
+                        box.classList.add('avail');
+                        box.innerHTML = box.dataset.pos;
+                    }
+                });
+            }
+
+            function handleSlotClick(box) {
+                const key = box.dataset.key;
+                const team = parseInt(box.dataset.team);
+                const pos = box.dataset.pos;
+
+                if (occupiedSlots[key]) return; // silently ignore
+
+                const isSelected = selectedSlots.find(s => s.key === key);
+
+                if (isSelected) {
+                    selectedSlots = selectedSlots.filter(s => s.key !== key);
+                    if (selectedSlots.length === 0) selectedTeam = null;
+                } else {
+                    if (selectedTeam !== null && selectedTeam !== team) {
+                        showAlert('You can only select slots within the same Team.');
+                        return;
+                    }
+                    if (selectedSlots.length >= slotConfig.playersPerTeam) {
+                        showAlert(`You can only select up to ${slotConfig.playersPerTeam} slots.`);
+                        return;
+                    }
+                    selectedTeam = team;
+                    selectedSlots.push({ team, pos, key });
+                    selectedSlots.sort((a, b) => a.pos.localeCompare(b.pos));
+                }
+                updateGridUI();
+                updateBottomBar();
+            }
+
+            function updateBottomBar() {
+                const count = selectedSlots.length;
+                getEl('csCountDisplay').textContent = `${count}/${slotConfig.playersPerTeam}`;
+                getEl('csNextBtn').disabled = (count === 0);
+                getEl('pdFeeDisplay').textContent = `₹${entryFee}`;
+            }
+
+            function goToPlayerDetails() {
+                const container = getEl('playerDetailsInputsContainer');
+                let inputsHtml = '';
+                
+                selectedSlots.forEach((slot, index) => {
+                    let isRequired = index === 0 ? 'required' : '';
+                    let optionalTag = index > 0 ? '<span style="font-size: 0.65rem; color: var(--text-muted); float: right;">(Optional)</span>' : '';
+                    
+                    inputsHtml += `
+                        <div class="p-3 mb-3" style="background: rgba(0,0,0,0.3); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
+                            <h6 class="text-white mb-3 fw-bold" style="font-size: 0.85rem; text-transform: uppercase;">
+                                <i class="bi bi-person-fill" style="color: var(--accent-cyan);"></i> Team ${slot.team} - Position ${slot.pos}
+                                ${optionalTag}
+                            </h6>
+                            <div class="mb-3">
+                                <label class="form-label">In-Game Name</label>
+                                <input type="text" class="form-control player-name-input" placeholder="Enter Game Name" ${isRequired}>
+                            </div>
+                            <div class="mb-1">
+                                <label class="form-label">Game UID</label>
+                                <input type="number" class="form-control player-uid-input" placeholder="Enter UID" ${isRequired}>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = inputsHtml;
+                getEl('playerDetailsOverlay').classList.add('active');
+            }
+
+            async function confirmJoin() {
+                const nameInputs = document.querySelectorAll('#playerDetailsInputsContainer .player-name-input');
+                const uidInputs = document.querySelectorAll('#playerDetailsInputsContainer .player-uid-input');
+                
+                let teamData = [];
+                let partialEntry = false;
+
+                for(let i = 0; i < nameInputs.length; i++) {
+                    let pName = nameInputs[i].value.trim();
+                    let pUid = uidInputs[i].value.trim();
+                    
+                    if(pName && pUid) {
+                        teamData.push({ gameName: pName, gameUid: pUid, slotKey: selectedSlots[i].key });
+                    } else if (pName || pUid) {
+                        partialEntry = true;
+                    }
+                }
+
+                if(partialEntry) return alert("Please fill both Name and UID for any player you add, or leave both fields empty.");
+                if(teamData.length === 0) return alert("Please fill details for at least 1 player!");
+                
+                const depBal = userProfile.balance || 0;
+                const winBal = userProfile.winningCash || 0;
+                
+                if((depBal + winBal) < entryFee) return alert("Insufficient Balance! Please deposit funds to play.");
+                
+                let remainingFee = entryFee;
+                let newDep = depBal;
+                let newWin = winBal;
+                
+                if (newDep >= remainingFee) {
+                    newDep -= remainingFee;
+                } else {
+                    remainingFee -= newDep;
+                    newDep = 0;
+                    newWin -= remainingFee; // Deduced from winnings
+                }
+                
+                showLoader(true);
+                try {
+                    // Re-check slot availability before writing
+                    const slotsSnap = await get(ref(db, `tournaments/${currentTournamentId}/slots`));
+                    const currentOccupied = slotsSnap.val() || {};
+                    let conflict = false;
+                    for (const slot of selectedSlots) {
+                        if (currentOccupied[slot.key]) conflict = true;
+                    }
+                    if (conflict) {
+                        showAlert('One or more of your selected slots got booked just now! Please select another slot.', 'danger');
+                        getEl('playerDetailsOverlay').classList.remove('active'); // Send back to slot selection
+                        showLoader(false);
+                        return;
+                    }
+
+                    // 1. Write Slots
+                    const slotUpdates = {};
+                    selectedSlots.forEach(s => slotUpdates[s.key] = currentUser.uid);
+                    await update(ref(db, `tournaments/${currentTournamentId}/slots`), slotUpdates);
+
+                    // 2. Write Wallet
+                    await update(ref(db, `users/${currentUser.uid}`), { 
+                        balance: newDep,
+                        winningCash: newWin
+                    });
+                    
+                    // 3. Write Registration
+                    const slotKeysArray = selectedSlots.map(s => s.key);
+                    const registrationData = {
+                        timestamp: serverTimestamp(),
+                        gameName: teamData[0].gameName,
+                        gameUid: teamData[0].gameUid,
+                        teamDetails: teamData,
+                        slots: slotKeysArray
+                    };
+
+                    await update(ref(db, `tournaments/${currentTournamentId}/registeredPlayers/${currentUser.uid}`), registrationData);
+                    await update(ref(db, `users/${currentUser.uid}/joinedTournaments/${currentTournamentId}`), { timestamp: serverTimestamp() });
+                    
+                    alert("Match Joined Successfully!"); 
+                    closeScreens();
+                    showSection('home-section');
+                } catch(e) { 
+                    alert("Error: " + e.message); 
+                } finally { 
+                    showLoader(false); 
+                }
+            }
+
+            // Bind UI Events
+            document.addEventListener('DOMContentLoaded', () => {
+                getEl('csBackBtn').onclick = closeScreens;
+                getEl('pdBackBtn').onclick = () => getEl('playerDetailsOverlay').classList.remove('active');
+                getEl('csNextBtn').onclick = goToPlayerDetails;
+                getEl('pdConfirmBtn').onclick = confirmJoin;
+            });
+
+            return { open: openScreen };
+        })();
 
         /* --- Recharge Handling --- */
         let finalRechargeAmt = 0;
