@@ -628,7 +628,7 @@
         .tc-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.03); }
         .tc-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .tc-stat span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-        .tc-stat strong { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+        .tc-stat strong { font-size: 0.85rem; font-weight: 700; color: var(--text-main); line-height: 1.35; }
         
         .tc-progress-section .tc-progress-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
         .tc-progress-section .tc-progress-header strong { color: var(--text-main); font-weight: 700; }
@@ -1321,12 +1321,12 @@
             <h2 class="section-title"><i class="bi bi-controller" style="color: var(--accent-cyan);"></i> Select Mode</h2>
             <div class="row g-3 mb-4">
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/ffffff?text=ALL+MATCHES');" onclick="window.filterFFMode(null, null)"><div class="game-card-new-overlay"><span>ALL MATCHES</span></div></div></div>
-                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/06b6d4?text=FULL+MAP');" onclick="window.filterFFMode('Full Map', 'Squad')"><div class="game-card-new-overlay"><span>FULL MAP</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('IMG-20260629-WA0015.jpg');" onclick="window.filterFFMode('Full Map', 'Squad')"><div class="game-card-new-overlay"><span>FULL MAP</span></div></div></div>
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/facc15?text=SURVIVAL');" onclick="window.filterFFMode('Survival', 'Solo')"><div class="game-card-new-overlay"><span>SURVIVAL</span></div></div></div>
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/8b5cf6?text=FULL+MAP+2');" onclick="window.filterFFMode('Full Map', 'Duo')"><div class="game-card-new-overlay"><span>FULL MAP 2</span></div></div></div>
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/ef4444?text=LONE+WOLF');" onclick="window.filterFFMode('Lone Wolf', 'Solo')"><div class="game-card-new-overlay"><span>LONE WOLF</span></div></div></div>
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/10b981?text=CS+1V1');" onclick="window.filterFFMode('Clash Squad', 'Solo')"><div class="game-card-new-overlay"><span>CS 1V1</span></div></div></div>
-                <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/3b82f6?text=CS+ONETAP');" onclick="window.filterFFMode('Clash Squad', 'Solo')"><div class="game-card-new-overlay"><span>CS ONETAP</span></div></div></div>
+                <div class="col-6"><div class="game-card-new" style="background-image: url('onetap.jpg');" onclick="window.filterFFMode('Clash Squad', 'Solo')"><div class="game-card-new-overlay"><span>CS ONETAP</span></div></div></div>
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/f97316?text=LW+2V2');" onclick="window.filterFFMode('Lone Wolf', 'Duo')"><div class="game-card-new-overlay"><span>LW 2V2</span></div></div></div>
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/ec4899?text=CS+2V2');" onclick="window.filterFFMode('Clash Squad', 'Duo')"><div class="game-card-new-overlay"><span>CS 2V2</span></div></div></div>
                 <div class="col-6"><div class="game-card-new" style="background-image: url('https://via.placeholder.com/300x400/18181b/14b8a6?text=LW+10');" onclick="window.filterFFMode('Lone Wolf', 'Solo')"><div class="game-card-new-overlay"><span>LW ₹10</span></div></div></div>
@@ -2109,12 +2109,12 @@
                 </div>
                 
                 <div class="tc-stats-grid mb-3">
-                    <div class="tc-stat"><span>Date</span><strong>${tDate}</strong></div>
-                    <div class="tc-stat"><span>Time</span><strong>${tTime}</strong></div>
-                    ${t.map ? `<div class="tc-stat"><span>Map</span><strong>${t.map}</strong></div>` : ''}
-                    <div class="tc-stat"><span>Prize Pool</span><strong class="text-warning">₹${t.prizePool||0}</strong></div>
-                    <div class="tc-stat"><span>Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
-                    <div class="tc-stat"><span>Entry</span><strong>${eFee>0?'₹'+eFee:'Free'}</strong></div>
+                    <div class="tc-stat"><span>👑 Entry Fee</span><strong style="color:#10b981;">${eFee>0?'₹'+eFee:'Free'}</strong></div>
+                    <div class="tc-stat"><span>🏆 Prize Pool</span><strong class="text-warning">₹${t.prizePool||0}</strong></div>
+                    <div class="tc-stat"><span>🎯 Per Kill</span><strong style="color:var(--accent-cyan);">₹${t.perKillPrize||0}</strong></div>
+                    <div class="tc-stat"><span>🕐 Time</span><strong style="color:var(--orange);">${tDate}<br>${tTime}</strong></div>
+                    <div class="tc-stat"><span>🎮 Type</span><strong>${t.mode||'Solo'}</strong></div>
+                    <div class="tc-stat"><span>🗺️ Map</span><strong>${t.map||'N/A'}</strong></div>
                 </div>
 
                 ${maxP>0 ? `
@@ -2252,20 +2252,22 @@
                 let tc = parseInt(t.teamCount);
                 let ppt = parseInt(t.playersPerTeam);
                 if (!tc || !ppt) {
-                    const category = (t.category || '').toLowerCase();
                     const mode = (t.mode || 'Solo').toLowerCase();
-                    if (category.includes('clash') || category.includes('cs')) {
-                        tc = 2;
-                        if (mode.includes('squad')) ppt = 4;
-                        else if (mode.includes('duo')) ppt = 2;
-                        else ppt = 1;
-                    } else if (category.includes('lone wolf')) {
-                        tc = 2;
-                        if (mode.includes('duo')) ppt = 2;
-                        else ppt = 1;
+                    const cat = (t.category || '').toLowerCase();
+
+                    if (cat === 'clash squad') {
+                        if (mode === 'solo') { tc = 2; ppt = 1; }
+                        else if (mode === 'duo') { tc = 2; ppt = 2; }
+                        else if (mode === 'squad') { tc = 2; ppt = 4; }
+                        else { tc = 2; ppt = 1; }
+                    } else if (cat === 'lone wolf') {
+                        if (mode === 'solo') { tc = 2; ppt = 1; }
+                        else if (mode === 'duo') { tc = 2; ppt = 2; }
+                        else { tc = 2; ppt = 1; }
                     } else {
-                        if (mode.includes('squad')) { tc = 12; ppt = 4; }
-                        else if (mode.includes('duo')) { tc = 24; ppt = 2; }
+                        if (mode === 'solo') { tc = 48; ppt = 1; }
+                        else if (mode === 'duo') { tc = 24; ppt = 2; }
+                        else if (mode === 'squad') { tc = 12; ppt = 4; }
                         else { tc = 48; ppt = 1; }
                     }
                 }
