@@ -2253,22 +2253,16 @@
                 let ppt = parseInt(t.playersPerTeam);
                 if (!tc || !ppt) {
                     const mode = (t.mode || 'Solo').toLowerCase();
-                    const cat = (t.category || '').toLowerCase();
-
-                    if (cat === 'clash squad') {
-                        if (mode === 'solo') { tc = 2; ppt = 1; }
-                        else if (mode === 'duo') { tc = 2; ppt = 2; }
-                        else if (mode === 'squad') { tc = 2; ppt = 4; }
-                        else { tc = 2; ppt = 1; }
-                    } else if (cat === 'lone wolf') {
-                        if (mode === 'solo') { tc = 2; ppt = 1; }
-                        else if (mode === 'duo') { tc = 2; ppt = 2; }
-                        else { tc = 2; ppt = 1; }
+                    if (mode.includes('duo')) {
+                        if (mode.includes('lone wolf')) { tc = 2; ppt = 2; }
+                        else if (mode.includes('cs') || mode.includes('clash')) { tc = 2; ppt = 2; }
+                        else { tc = 24; ppt = 2; }
+                    } else if (mode.includes('squad')) {
+                        if (mode.includes('cs') || mode.includes('clash')) { tc = 2; ppt = 4; }
+                        else { tc = 12; ppt = 4; }
                     } else {
-                        if (mode === 'solo') { tc = 48; ppt = 1; }
-                        else if (mode === 'duo') { tc = 24; ppt = 2; }
-                        else if (mode === 'squad') { tc = 12; ppt = 4; }
-                        else { tc = 48; ppt = 1; }
+                        // Solo
+                        tc = 48; ppt = 1;
                     }
                 }
                 return { teamCount: Math.min(tc, 100), playersPerTeam: Math.min(ppt, 6) };
