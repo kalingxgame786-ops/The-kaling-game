@@ -464,6 +464,15 @@
             border-radius: 4px !important;
         }
 
+        /* ── TOURNAMENT DETAILS OVERLAY ── */
+        .td-tabs { display: flex; background: var(--bg-surface); border-bottom: 1px solid var(--border); }
+        .td-tab-item { flex: 1; padding: 14px 0; background: none; border: none; color: var(--text-muted); font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .td-tab-item.active { color: var(--red); border-bottom: 2px solid var(--red); }
+        .td-member-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+        .td-member-item:hover { background: rgba(255,255,255,0.02); }
+        .td-member-name { font-weight: 700; color: var(--text-main); font-size: 0.9rem; }
+        .td-member-time { font-size: 0.7rem; color: var(--text-muted); }
+
         /* ── HOME QUICK NAV ICONS ── */
         .glass-card.p-3.mb-4 { padding: 18px !important; }
 
@@ -1596,28 +1605,6 @@
     <!-- Match Details Modal -->
     <div class="modal fade" id="matchDetailsModalEl" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="matchDetailsModalTitleEl">Match Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body text-muted" id="matchDetailsModalBodyEl" style="line-height: 1.6;"></div></div></div></div>
     
-    <!-- Join Tournament Modal -->
-    <div class="modal fade" id="joinTournamentDetailsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-gradient">Join Match</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="glass-card text-center mb-4 p-3">
-                        <span class="text-muted small fw-bold text-uppercase">Total Entry Fee</span>
-                        <h3 id="joinFeeDisplayEl" class="text-white fw-bold m-0 mt-1">₹0.00</h3>
-                    </div>
-                    <form id="joinTournamentForm">
-                        <input type="hidden" id="joinTournamentIdInput">
-                        <div id="dynamicPlayerInputsContainer"></div>
-                        <button type="button" class="btn-custom btn-primary-gradient w-100 mt-3" id="confirmJoinBtn">Confirm & Pay</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- ID Password Modal -->
     <div class="modal fade" id="idPasswordModalEl" tabindex="-1">
@@ -1646,6 +1633,76 @@
                         <button class="btn btn-sm btn-outline-custom copy-btn" data-target="#roomPasswordDisplayEl"><i class="bi bi-clipboard"></i></button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tournament Details Overlay -->
+    <div id="tournamentDetailsOverlay" class="fs-overlay">
+        <div class="fs-header">
+            <button class="fs-back-btn" id="tdBackBtn"><i class="bi bi-chevron-left"></i></button>
+            <div class="fs-header-title text-uppercase" id="tdTitle">Match Details</div>
+        </div>
+        <div class="fs-body" style="padding: 0;">
+            <img src="" id="tdBanner" style="width: 100%; aspect-ratio: 21/9; object-fit: cover;" alt="Banner">
+            
+            <div class="td-tabs">
+                <button class="td-tab-item active" data-target="td-desc">DESCRIPTION</button>
+                <button class="td-tab-item" data-target="td-members">JOINED MEMBERS</button>
+            </div>
+            
+            <div class="td-content-container" style="padding: 16px; padding-bottom: 90px; overflow-y: auto; height: calc(100% - 100px);">
+                <!-- DESCRIPTION TAB -->
+                <div id="td-desc" class="td-tab-content" style="display: block;">
+                    <h4 id="tdMatchTitle" style="font-weight: 800; margin-bottom: 12px; font-size: 1.1rem; line-height: 1.3;"></h4>
+                    
+                    <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;" id="tdBadges">
+                    </div>
+
+                    <div class="glass-card" style="padding: 14px;">
+                        <div class="section-title" style="margin-bottom: 10px;"><i class="bi bi-clock-history"></i> Match Schedule</div>
+                        <strong style="color: var(--orange); font-size: 0.95rem;" id="tdSchedule"></strong>
+                    </div>
+
+                    <div class="glass-card" style="padding: 14px;">
+                        <div class="section-title" style="margin-bottom: 10px;"><i class="bi bi-trophy-fill"></i> Price Details</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">WINNING PRIZE</span>
+                            <strong style="color: var(--gold-light);" id="tdPrizePool"></strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">PER KILL</span>
+                            <strong style="color: var(--accent-cyan);" id="tdPerKill"></strong>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 14px;">
+                        <div class="section-title" style="margin-bottom: 10px;"><i class="bi bi-info-circle-fill"></i> About this Match</div>
+                        <div id="tdDescription" style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; white-space: pre-line;"></div>
+                    </div>
+                </div>
+
+                <!-- JOINED MEMBERS TAB -->
+                <div id="td-members" class="td-tab-content" style="display: none;">
+                    <div class="tc-progress-section mb-3 p-3 glass-card" id="tdProgressSection">
+                        <div class="tc-progress-header" style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
+                            <span>Joined: <strong id="tdJoinedCount" style="color: var(--text-main); font-weight: 700;">0</strong></span>
+                            <span id="tdRemainingSpan">Remaining: <strong id="tdRemainingCount" style="color: var(--text-main); font-weight: 700;">0</strong></span>
+                            <span id="tdTotalSpan">Total: <strong id="tdTotalCount" style="color: var(--text-main); font-weight: 700;">0</strong></span>
+                        </div>
+                        <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: var(--r-full); overflow: hidden;">
+                            <div class="progress-bar bg-danger" id="tdProgressBar" style="width: 0%; background: var(--grad-red);"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="tdMembersList" class="glass-card" style="padding: 0; overflow: hidden;">
+                        <!-- Members injected by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: var(--bg-surface); padding: 12px 16px; border-top: 1px solid var(--border); z-index: 10;">
+                <div id="tdJoinBtnContainer"></div>
             </div>
         </div>
     </div>
@@ -1747,7 +1804,7 @@
                 editName: new bootstrap.Modal(getEl('editNameModal')),
                 matchHistory: new bootstrap.Modal(getEl('matchHistoryModal')),
                 notifications: new bootstrap.Modal(getEl('notificationsModalEl')),
-                join: new bootstrap.Modal(getEl('joinTournamentDetailsModal')),
+
                 idPass: new bootstrap.Modal(getEl('idPasswordModalEl')),
                 matchDetails: new bootstrap.Modal(getEl('matchDetailsModalEl'))
             };
@@ -2135,9 +2192,7 @@
             });
 
             card.querySelector('.btn-details')?.addEventListener('click', e => { 
-                getEl('matchDetailsModalTitleEl').textContent = t.name; 
-                getEl('matchDetailsModalBodyEl').innerHTML = `<p>${t.description || 'No special rules.'}</p><br><p><strong class="text-white">Map/Mode:</strong> ${t.mode||'Solo'}</p>`; 
-                modals.matchDetails.show(); 
+                openTournamentDetails(id, t);
             });
             
             card.querySelector('.btn-idpass')?.addEventListener('click', e => { 
@@ -2166,74 +2221,126 @@
             return card;
         }
 
-        getEl('confirmJoinBtn').onclick = async () => {
-            const tid = getEl('joinTournamentIdInput').value;
-            const fee = parseFloat(getEl('joinFeeDisplayEl').textContent.replace('₹',''));
-            
-            const nameInputs = document.querySelectorAll('.player-name-input');
-            const uidInputs = document.querySelectorAll('.player-uid-input');
-            
-            let teamData =[];
-            let partialEntry = false;
 
-            for(let i = 0; i < nameInputs.length; i++) {
-                let pName = nameInputs[i].value.trim();
-                let pUid = uidInputs[i].value.trim();
-                
-                if(pName && pUid) {
-                    teamData.push({ gameName: pName, gameUid: pUid });
-                } else if (pName || pUid) {
-                    // One is filled, the other is not
-                    partialEntry = true;
-                }
-            }
 
-            if(partialEntry) return alert("Please fill both Name and UID for any player you add, or leave both fields empty.");
-            if(teamData.length === 0) return alert("Please fill details for at least 1 player!");
-            
-            const depBal = userProfile.balance || 0;
-            const winBal = userProfile.winningCash || 0;
-            
-            if((depBal + winBal) < fee) return alert("Insufficient Balance! Please deposit funds to play.");
-            
-            let remainingFee = fee;
-            let newDep = depBal;
-            let newWin = winBal;
-            
-            if (newDep >= remainingFee) {
-                newDep -= remainingFee;
-            } else {
-                remainingFee -= newDep;
-                newDep = 0;
-                newWin -= remainingFee; // Deduced from winnings
-            }
-            
-            showLoader(true);
-            try {
-                await update(ref(db, `users/${currentUser.uid}`), { 
-                    balance: newDep,
-                    winningCash: newWin
-                });
-                
-                const registrationData = {
-                    timestamp: serverTimestamp(),
-                    gameName: teamData[0].gameName,
-                    gameUid: teamData[0].gameUid,
-                    teamDetails: teamData 
-                };
+        /* --- Tournament Details Full-Screen Flow --- */
+        let detailsRegisteredListenerRef = null;
 
-                await update(ref(db, `tournaments/${tid}/registeredPlayers/${currentUser.uid}`), registrationData);
-                await update(ref(db, `users/${currentUser.uid}/joinedTournaments/${tid}`), { timestamp: serverTimestamp() });
-                
-                modals.join.hide(); 
-                alert("Match Joined Successfully!"); 
-                showSection('home-section');
-            } catch(e){ 
-                alert("Error: " + e.message); 
-            } finally { 
-                showLoader(false); 
+        getEl('tdBackBtn').onclick = () => {
+            getEl('tournamentDetailsOverlay').classList.remove('active');
+            if (detailsRegisteredListenerRef) {
+                off(detailsRegisteredListenerRef);
+                detailsRegisteredListenerRef = null;
             }
         };
+
+        document.querySelectorAll('.td-tab-item').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.td-tab-item').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.td-tab-content').forEach(c => c.style.display = 'none');
+                e.target.classList.add('active');
+                getEl(e.target.getAttribute('data-target')).style.display = 'block';
+            });
+        });
+
+        function openTournamentDetails(id, t) {
+            // Reset tabs
+            document.querySelectorAll('.td-tab-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.td-tab-content').forEach(c => c.style.display = 'none');
+            document.querySelector('.td-tab-item[data-target="td-desc"]').classList.add('active');
+            getEl('td-desc').style.display = 'block';
+
+            // Populate Banner & Description Tab
+            getEl('tdBanner').src = t.bannerUrl || 'https://via.placeholder.com/400x200/18181b/06b6d4?text=Match';
+            getEl('tdMatchTitle').textContent = t.tournamentId ? `${t.name} - Match #${t.tournamentId}` : t.name;
+            
+            const eFee = t.entryFee || 0;
+            const feeText = eFee > 0 ? 'PAID' : 'FREE';
+            getEl('tdBadges').innerHTML = `
+                <span style="background: var(--bg-card2); color: var(--text-main); font-size: 0.75rem; padding: 4px 10px; border-radius: var(--r-sm); border: 1px solid var(--border); font-weight: 700;">${t.mode || 'Solo'}</span>
+                <span style="background: ${eFee > 0 ? 'var(--grad-red)' : 'var(--grad-gold)'}; color: ${eFee > 0 ? '#fff' : '#000'}; font-size: 0.75rem; padding: 4px 10px; border-radius: var(--r-sm); border: 1px solid var(--border); font-weight: 700;">${feeText}</span>
+                <span style="background: rgba(255,255,255,0.05); color: var(--text-muted); font-size: 0.75rem; padding: 4px 10px; border-radius: var(--r-sm); border: 1px solid var(--border); font-weight: 700;">MAP: ${t.map || 'N/A'}</span>
+            `;
+
+            getEl('tdSchedule').textContent = formatDate(t.startTime);
+            getEl('tdPrizePool').textContent = `₹${t.prizePool || 0}`;
+            getEl('tdPerKill').textContent = `₹${t.perKillPrize || 0}`;
+            getEl('tdDescription').textContent = t.description || 'No special rules.';
+
+            const maxP = t.maxPlayers || 0;
+            
+            // Build Button
+            const isJ = currentUser && userProfile?.joinedTournaments?.[id];
+            const regC = Object.keys(t.registeredPlayers || {}).length;
+            let btnHTML = '';
+            
+            if (t.status === 'completed' || t.status === 'result') {
+                btnHTML = `<button class="btn-custom btn-outline-custom" disabled>COMPLETED</button>`;
+            } else if (isJ) {
+                btnHTML = `<button class="btn-custom" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981;" disabled>ALREADY JOINED</button>`;
+            } else if (t.status === 'upcoming' && (maxP === 0 || maxP - regC > 0)) {
+                btnHTML = `<button class="btn-custom btn-primary-gradient btn-join-details" data-id="${id}">JOIN NOW</button>`;
+            } else {
+                btnHTML = `<button class="btn-custom btn-outline-custom" disabled>MATCH FULL</button>`;
+            }
+            getEl('tdJoinBtnContainer').innerHTML = btnHTML;
+
+            const btnNode = getEl('tdJoinBtnContainer').querySelector('.btn-join-details');
+            if (btnNode) {
+                btnNode.onclick = () => {
+                    ArenaChooseSlot.open(id, t, eFee);
+                };
+            }
+
+            // Realtime Members listener
+            if (detailsRegisteredListenerRef) {
+                off(detailsRegisteredListenerRef);
+            }
+            detailsRegisteredListenerRef = ref(db, `tournaments/${id}/registeredPlayers`);
+            onValue(detailsRegisteredListenerRef, (snap) => {
+                const players = snap.val() || {};
+                const currentRegC = Object.keys(players).length;
+                
+                getEl('tdJoinedCount').textContent = currentRegC;
+                if (maxP > 0) {
+                    getEl('tdRemainingSpan').style.display = 'inline';
+                    getEl('tdTotalSpan').style.display = 'inline';
+                    getEl('tdRemainingCount').textContent = Math.max(0, maxP - currentRegC);
+                    getEl('tdTotalCount').textContent = maxP;
+                    const pCent = Math.min(100, Math.round((currentRegC / maxP) * 100));
+                    getEl('tdProgressBar').style.width = `${pCent}%`;
+                } else {
+                    getEl('tdRemainingSpan').style.display = 'none';
+                    getEl('tdTotalSpan').style.display = 'inline';
+                    getEl('tdTotalCount').textContent = 'Unlimited';
+                    getEl('tdProgressBar').style.width = '100%';
+                }
+
+                const listEl = getEl('tdMembersList');
+                listEl.innerHTML = '';
+                if (currentRegC === 0) {
+                    listEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">No players joined yet.</div>';
+                } else {
+                    // Sort by timestamp if possible
+                    const playerArr = Object.values(players).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    playerArr.forEach((p, idx) => {
+                        const name = p.gameName || 'Unknown Player';
+                        const timeStr = formatDate(p.timestamp);
+                        listEl.innerHTML += `
+                            <div class="td-member-item">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="color: var(--text-muted); font-weight: 800; font-size: 0.75rem;">${idx + 1}</span>
+                                    <div class="td-member-name">${name}</div>
+                                </div>
+                                <div class="td-member-time">${timeStr}</div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            getEl('tournamentDetailsOverlay').classList.add('active');
+        }
 
         /* --- Choose Slot Full-Screen Flow --- */
         const ArenaChooseSlot = (function() {
