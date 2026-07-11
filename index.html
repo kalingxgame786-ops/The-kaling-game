@@ -1764,6 +1764,19 @@
         </div>
     </div>
 
+    <!-- Join Result Overlay -->
+    <div id="joinResultOverlay" class="fs-overlay" style="justify-content: center; align-items: center; padding: 32px 24px; text-align: center;">
+        <div id="joinResultContent" style="opacity: 0; transform: translateY(15px); transition: opacity 0.4s ease, transform 0.4s ease; width: 100%; max-width: 400px;">
+            <div id="joinResultIconWrapper" style="width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; font-size: 3rem; color: white;">
+                <i id="joinResultIcon" class="bi bi-check-lg"></i>
+            </div>
+            <h4 id="joinResultTitle" style="color: var(--text-main); font-weight: 800; margin-bottom: 12px; font-size: 1.15rem; line-height: 1.35;"></h4>
+            <p id="joinResultMessage" style="font-weight: 700; margin-bottom: 40px; font-size: 0.95rem; color: var(--orange);"></p>
+            <button class="btn-custom btn-primary-gradient w-100" id="joinResultHomeBtn">HOME</button>
+            <button class="btn-custom btn-outline-custom w-100 mt-3" id="joinResultRetryBtn" style="display:none; border-color:var(--red) !important; color:var(--red) !important;">TRY AGAIN</button>
+        </div>
+    </div>
+
     <!-- Firebase & Logic Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -2557,7 +2570,11 @@
                 const depBal = userProfile.balance || 0;
                 const winBal = userProfile.winningCash || 0;
                 
-                if((depBal + winBal) < entryFee) return alert("Insufficient Balance! Please deposit funds to play.");
+                if((depBal + winBal) < entryFee) {
+                    const tNameR = (currentTournamentData && currentTournamentData.name) ? currentTournamentData.name : 'Tournament';
+                    showJoinResult('rejected', tNameR, 'Insufficient balance. Please deposit funds to play.');
+                    return;
+                }
                 
                 let remainingFee = entryFee;
                 let newDep = depBal;
@@ -2581,9 +2598,10 @@
                         if (currentOccupied[slot.key]) conflict = true;
                     }
                     if (conflict) {
-                        showAlert('One or more of your selected slots got booked just now! Please select another slot.', 'danger');
-                        getEl('playerDetailsOverlay').classList.remove('active'); // Send back to slot selection
+                        getEl('playerDetailsOverlay').classList.remove('active');
                         showLoader(false);
+                        const tNameC = (currentTournamentData && currentTournamentData.name) ? currentTournamentData.name : 'Tournament';
+                        showJoinResult('rejected', tNameC, 'This slot was just booked by someone else. Please try again.');
                         return;
                     }
 
@@ -2611,14 +2629,59 @@
                     await update(ref(db, `tournaments/${currentTournamentId}/registeredPlayers/${currentUser.uid}`), registrationData);
                     await update(ref(db, `users/${currentUser.uid}/joinedTournaments/${currentTournamentId}`), { timestamp: serverTimestamp() });
                     
-                    alert("Match Joined Successfully!"); 
+                    const tName = (currentTournamentData && currentTournamentData.name) ? currentTournamentData.name : 'Tournament';
                     closeScreens();
-                    showSection('home-section');
+                    showJoinResult('success', tName, 'You have joined successfully.');
                 } catch(e) { 
                     alert("Error: " + e.message); 
                 } finally { 
                     showLoader(false); 
                 }
+            }
+
+            // ── Join Result Screen ──────────────────────────────
+            function showJoinResult(status, tournamentName, message) {
+                const overlay  = getEl('joinResultOverlay');
+                const content  = getEl('joinResultContent');
+                const iconWrap = getEl('joinResultIconWrapper');
+                const icon     = getEl('joinResultIcon');
+                const title    = getEl('joinResultTitle');
+                const msgEl    = getEl('joinResultMessage');
+                const retryBtn = getEl('joinResultRetryBtn');
+
+                title.textContent = tournamentName;
+                msgEl.textContent = message;
+
+                if (status === 'success') {
+                    iconWrap.style.background = 'var(--orange)';
+                    icon.className            = 'bi bi-check-lg';
+                    msgEl.style.color         = 'var(--orange)';
+                    retryBtn.style.display    = 'none';
+                } else {
+                    iconWrap.style.background = 'var(--red)';
+                    icon.className            = 'bi bi-x-lg';
+                    msgEl.style.color         = 'var(--red)';
+                    retryBtn.style.display    = 'block';
+                }
+
+                content.style.opacity   = '0';
+                content.style.transform = 'translateY(15px)';
+                overlay.classList.add('active');
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        content.style.opacity   = '1';
+                        content.style.transform = 'translateY(0)';
+                    });
+                });
+
+                getEl('joinResultHomeBtn').onclick = () => {
+                    overlay.classList.remove('active');
+                    showSection('home-section');
+                };
+                getEl('joinResultRetryBtn').onclick = () => {
+                    overlay.classList.remove('active');
+                    if (currentTournamentId) openScreen(currentTournamentId, currentTournamentData, entryFee);
+                };
             }
 
             // Bind UI Events
