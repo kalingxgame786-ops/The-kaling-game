@@ -1757,7 +1757,7 @@
         </div>
         <div class="fs-bottom-bar">
             <div class="fs-summary">
-                <span class="fs-summary-title">Total Fee</span>
+                <span class="fs-summary-title">Total Payable</span>
                 <span class="fs-summary-value" id="pdFeeDisplay">₹0</span>
             </div>
             <button class="btn-custom btn-primary-gradient btn-fs-next" id="pdConfirmBtn">Confirm & Pay</button>
@@ -2512,9 +2512,13 @@
 
             function updateBottomBar() {
                 const count = selectedSlots.length;
+                const totalFee = entryFee * count;
                 getEl('csCountDisplay').textContent = `${count}/${slotConfig.playersPerTeam}`;
                 getEl('csNextBtn').disabled = (count === 0);
-                getEl('pdFeeDisplay').textContent = `₹${entryFee}`;
+                getEl('csFeeDisplay').textContent = `₹${entryFee}`;
+                getEl('pdFeeDisplay').textContent = count > 1
+                    ? `₹${totalFee} (${count}×₹${entryFee})`
+                    : `₹${count === 0 ? 0 : entryFee}`;
             }
 
             function goToPlayerDetails() {
@@ -2569,14 +2573,15 @@
                 
                 const depBal = userProfile.balance || 0;
                 const winBal = userProfile.winningCash || 0;
+                const totalFee = entryFee * selectedSlots.length;
                 
-                if((depBal + winBal) < entryFee) {
+                if((depBal + winBal) < totalFee) {
                     const tNameR = (currentTournamentData && currentTournamentData.name) ? currentTournamentData.name : 'Tournament';
-                    showJoinResult('rejected', tNameR, 'Insufficient balance. Please deposit funds to play.');
+                    showJoinResult('rejected', tNameR, `Insufficient balance. ₹${totalFee} required for ${selectedSlots.length} slot(s).`);
                     return;
                 }
                 
-                let remainingFee = entryFee;
+                let remainingFee = totalFee;
                 let newDep = depBal;
                 let newWin = winBal;
                 
@@ -2618,12 +2623,17 @@
                     
                     // 3. Write Registration
                     const slotKeysArray = selectedSlots.map(s => s.key);
+                    const totalFee = entryFee * selectedSlots.length;
                     const registrationData = {
                         timestamp: serverTimestamp(),
                         gameName: teamData[0].gameName,
                         gameUid: teamData[0].gameUid,
                         teamDetails: teamData,
-                        slots: slotKeysArray
+                        slots: slotKeysArray,
+                        slotCount: selectedSlots.length,
+                        entryFeePerSlot: entryFee,
+                        totalPaid: totalFee,
+                        paymentType: "PER_SLOT"
                     };
 
                     await update(ref(db, `tournaments/${currentTournamentId}/registeredPlayers/${currentUser.uid}`), registrationData);
