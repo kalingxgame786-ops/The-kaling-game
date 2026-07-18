@@ -3050,17 +3050,18 @@
             }
             
             referralLinkUnsubscribe = onValue(linkRef, (snap) => {
-                let baseLink = snap.val();
-                if (!baseLink) {
-                    baseLink = localStorage.getItem('demo_link');
+                let link = snap.val();
+                if (!link) {
+                    link = localStorage.getItem('demo_link');
                 }
                 
-                if (baseLink && baseLink.trim() !== "") {
-                    const separator = baseLink.includes('?') ? '&' : '?';
-                    const myLink = `${baseLink}${separator}ref=${currentUser.uid}`;
-                    getEl('myReferralLinkEl').textContent = myLink;
+                const el = getEl('myReferralLinkEl');
+                if (link && link.trim() !== "") {
+                    const separator = link.includes('?') ? '&' : '?';
+                    const myLink = `${link}${separator}ref=${currentUser.uid}`;
+                    el.textContent = myLink;
                 } else {
-                    getEl('myReferralLinkEl').textContent = "Demo link not available";
+                    el.textContent = "Demo link not available";
                 }
             });
         }
