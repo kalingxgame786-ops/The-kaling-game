@@ -1509,10 +1509,24 @@
                 <p class="text-muted small px-2">Invite friends to play tournaments. You both earn <strong class="text-white" id="referralBonusText">₹0</strong> on signup!</p>
             </div>
             <div class="referral-box">
+                <div class="row g-2 mb-3">
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Today</small><strong class="text-info fs-5" id="refTodayEl">0</strong></div></div>
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Weekly</small><strong class="text-info fs-5" id="refWeeklyEl">0</strong></div></div>
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Monthly</small><strong class="text-info fs-5" id="refMonthlyEl">0</strong></div></div>
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Conversion</small><strong class="text-accent fs-5" id="refConversionEl">0%</strong></div></div>
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Total Referrals</small><strong class="text-white fs-5" id="refTotalEl">0</strong></div></div>
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Pending</small><strong class="text-warning fs-5" id="refPendingEl">0</strong></div></div>
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Completed</small><strong class="text-success fs-5" id="refCompletedEl">0</strong></div></div>
+                    <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Rejected</small><strong class="text-danger fs-5" id="refRejectedEl">0</strong></div></div>
+                    <div class="col-12"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Total Payout</small><strong class="text-success fs-4" id="refPayoutEl">₹0</strong></div></div>
+                </div>
                 <p class="text-muted small fw-bold mb-2">Your Invite Link</p>
                 <div class="bg-black p-3 rounded text-white fw-bold fs-6 mb-3 border border-secondary" style="word-wrap: break-word;" id="myReferralLinkEl">Generating...</div>
                 <button class="btn-custom btn-primary-gradient w-100 copy-btn" data-target="#myReferralLinkEl"><i class="bi bi-clipboard"></i> Copy Invite Link</button>
             </div>
+            
+            <h5 class="fw-bold mt-4 mb-3 ps-2">Referral History</h5>
+            <div id="userReferralHistoryList"></div>
         </section>
 
         <!-- ================= HELP & SUPPORT ================= -->
@@ -1800,6 +1814,24 @@
         const auth = getAuth(app);
         const getEl = (id) => document.getElementById(id);
 
+        // --- Referral Click & Install Tracking ---
+        function trackReferralClick() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refUid = urlParams.get('ref');
+            
+            if (refUid) {
+                if (!localStorage.getItem('pendingReferralUid')) {
+                    localStorage.setItem('pendingReferralUid', refUid);
+                }
+                const clickFlag = 'has_clicked_ref_' + refUid;
+                if (!localStorage.getItem(clickFlag)) {
+                    localStorage.setItem(clickFlag, 'true');
+                    set(ref(db, `referralClicks/${refUid}/${Date.now()}`), { timestamp: serverTimestamp(), userAgent: navigator.userAgent }).catch(()=>{});
+                }
+            }
+        }
+        trackReferralClick();
+
         let currentUser = null, userProfile = {}, currentSectionId = 'login-section', appSettings = {}, swiperInstance, currentTournamentGameId = null, currentCategory = null, currentMode = null;
         window.filterFFMode = (category, mode) => {
             currentCategory = category;
@@ -1930,6 +1962,84 @@
             }
         });
 
+        let myReferralsUnsubscribe = null;
+        function listenToMyReferrals() {
+            if (!currentUser) return;
+            const pendingRef = query(ref(db, 'pendingReferrals'), orderByChild('referrerUid'), equalTo(currentUser.uid));
+            if (myReferralsUnsubscribe) {
+                myReferralsUnsubscribe();
+                myReferralsUnsubscribe = null;
+            }
+            
+            myReferralsUnsubscribe = onValue(pendingRef, (snap) => {
+                let total = 0, pending = 0, completed = 0, rejected = 0;
+                let today = 0, weekly = 0, monthly = 0, payout = 0;
+                let historyHtml = '';
+                let refs = [];
+                const now = Date.now();
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const r = child.val();
+                        total++;
+                        if (r.status === 'pending') pending++;
+                        else if (r.status === 'completed') { completed++; payout += (r.bonusAmount || r.reward || 0); }
+                        else if (r.status === 'rejected') rejected++;
+                        
+                        const ts = r.timestamp || 0;
+                        if (ts > 0) {
+                            const diffDays = (now - ts) / (1000 * 60 * 60 * 24);
+                            if (diffDays <= 1) today++;
+                            if (diffDays <= 7) weekly++;
+                            if (diffDays <= 30) monthly++;
+                        }
+                        refs.push(r);
+                    });
+                    refs.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+                    
+                    refs.forEach(r => {
+                        let statusColor = r.status === 'completed' ? 'success' : (r.status === 'rejected' ? 'danger' : 'warning');
+                        let statusText = r.status.charAt(0).toUpperCase() + r.status.slice(1);
+                        historyHtml += `
+                        <div class="glass-card p-3 mb-2 border-start border-4 border-${statusColor}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-white">${r.referredEmail || 'Unknown User'}</span>
+                                <span class="badge bg-${statusColor} bg-opacity-25 text-${statusColor}">${statusText}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">${formatDate(r.timestamp)}</small>
+                                <strong class="text-${statusColor}">${r.status === 'completed' ? '₹'+(r.bonusAmount||r.reward||0) : '-'}</strong>
+                            </div>
+                        </div>`;
+                    });
+                }
+                if (historyHtml === '') {
+                    historyHtml = '<div class="text-center py-3"><p class="text-muted small">No referrals yet.</p></div>';
+                }
+                
+                getEl('refTodayEl').textContent = today;
+                getEl('refWeeklyEl').textContent = weekly;
+                getEl('refMonthlyEl').textContent = monthly;
+                getEl('refConversionEl').textContent = total > 0 ? ((completed / total) * 100).toFixed(1) + '%' : '0%';
+                getEl('refPayoutEl').textContent = '₹' + payout;
+                getEl('refTotalEl').textContent = total;
+                getEl('refPendingEl').textContent = pending;
+                getEl('refCompletedEl').textContent = completed;
+                getEl('refRejectedEl').textContent = rejected;
+                getEl('userReferralHistoryList').innerHTML = historyHtml;
+            });
+        }
+        
+        function cleanupReferrals() {
+            if (myReferralsUnsubscribe) {
+                myReferralsUnsubscribe();
+                myReferralsUnsubscribe = null;
+            }
+            if (typeof referralLinkUnsubscribe !== 'undefined' && referralLinkUnsubscribe) {
+                referralLinkUnsubscribe();
+                referralLinkUnsubscribe = null;
+            }
+        }
+
         /* --- Auth Handling --- */
         onAuthStateChanged(auth, async (user) => {
             showLoader(true); currentUser = user;
@@ -1940,14 +2050,16 @@
                 if (snap.exists()) { userProfile = snap.val(); } 
                 else {
                     const sBonus = appSettings.signupBonus ?? 10;
-                    userProfile = { uid: user.uid, displayName: user.email?.split('@')[0], email: user.email, balance: sBonus, winningCash: 0, bonusCash: sBonus, joinedTournaments: {}, createdAt: serverTimestamp() };
+                    userProfile = { uid: user.uid, displayName: user.email?.split('@')[0], email: user.email, balance: sBonus, winningCash: 0, bonusCash: sBonus, joinedTournaments: {}, createdAt: serverTimestamp(), status: 'active' };
                     await set(uRef, userProfile);
                 }
                 updateUIForUser();
                 onValue(uRef, s => { if(s.exists()){ userProfile = s.val(); updateUIForUser(); } });
                 showSection(currentSectionId !== 'login-section' ? currentSectionId : 'home-section');
                 setupReferralSystem();
+                listenToMyReferrals();
             } else { 
+                cleanupReferrals();
                 getEl('notificationBtnEl').style.display = 'none';
                 getEl('headerWalletChipEl').style.display='none'; 
                 document.querySelectorAll('.bottom-nav .nav-item').forEach(i=>i.style.display='none');
@@ -1968,9 +2080,35 @@
             showLoader(true);
             try { 
                 const cred = await createUserWithEmailAndPassword(auth, em, pw); 
-                await update(ref(db, `users/${cred.user.uid}`), { displayName: name });
-                const refCode = getEl('signupReferralCodeInputEl').value.trim();
-                if(refCode) await push(ref(db, 'pendingReferrals'), {referrerUid: refCode, referredEmail: em, status: 'pending', timestamp: serverTimestamp()});
+                await update(ref(db, `users/${cred.user.uid}`), { displayName: name, status: 'active' });
+                
+                let refCode = getEl('signupReferralCodeInputEl').value.trim();
+                if (!refCode) {
+                    refCode = localStorage.getItem('pendingReferralUid') || "";
+                }
+                
+                if(refCode && refCode !== cred.user.uid) {
+                    const referrerSnap = await get(ref(db, `users/${refCode}`));
+                    if (referrerSnap.exists()) {
+                        const referrerData = referrerSnap.val();
+                        if (referrerData.status !== 'banned') {
+                            await set(ref(db, `pendingReferrals/${cred.user.uid}`), {
+                                referrerUid: refCode, 
+                                referredEmail: em,
+                                referredUid: cred.user.uid,
+                                status: 'pending', 
+                                reward: appSettings.referralBonus || 0,
+                                timestamp: serverTimestamp()
+                            });
+                            await push(ref(db, `users/${refCode}/notifications`), {
+                                title: 'New Referral Signup',
+                                message: `Signup detected from ${em}. Awaiting admin approval.`,
+                                timestamp: serverTimestamp()
+                            });
+                        }
+                    }
+                }
+                localStorage.removeItem('pendingReferralUid');
             } catch (e) { alert(e.message); } finally { showLoader(false); }
         };
 
@@ -2789,6 +2927,15 @@
                     });
                 }
                 
+                const refSnap = await get(ref(db, 'pendingReferrals'));
+                if (refSnap.exists()) {
+                    Object.values(refSnap.val()).forEach(r => {
+                        if (r.referrerUid === currentUser.uid && r.status === 'completed') {
+                            transactions.push({ ...r, type: 'Referral Bonus', amount: r.bonusAmount || r.reward || 0, time: r.creditedAt || r.timestamp || 0 });
+                        }
+                    });
+                }
+                
                 transactions.sort((a, b) => b.time - a.time);
                 historyList.innerHTML = '';
                 
@@ -2892,17 +3039,31 @@
         // =========================================================
         // 👇 DYNAMIC DEMO / REFERRAL LINK SYSTEM 👇
         // =========================================================
+        let referralLinkUnsubscribe = null;
         function setupReferralSystem() {
-            // Fetch the dynamic demo link saved by the Admin Panel from localStorage
-            const APP_DOWNLOAD_LINK = localStorage.getItem('demo_link'); 
+            if (!currentUser) return;
+            const linkRef = ref(db, 'settings/demoLink');
             
-            // Check if link exists and is valid
-            if (APP_DOWNLOAD_LINK && APP_DOWNLOAD_LINK.trim() !== "") {
-                const myLink = `${APP_DOWNLOAD_LINK}/?ref=${currentUser.uid}`; 
-                getEl('myReferralLinkEl').textContent = myLink;
-            } else {
-                getEl('myReferralLinkEl').textContent = "Demo link not available";
+            if (referralLinkUnsubscribe) {
+                referralLinkUnsubscribe();
+                referralLinkUnsubscribe = null;
             }
+            
+            referralLinkUnsubscribe = onValue(linkRef, (snap) => {
+                let link = snap.val();
+                if (!link) {
+                    link = localStorage.getItem('demo_link');
+                }
+                
+                const el = getEl('myReferralLinkEl');
+                if (link && link.trim() !== "") {
+                    const separator = link.includes('?') ? '&' : '?';
+                    const myLink = `${link}${separator}ref=${currentUser.uid}`;
+                    el.textContent = myLink;
+                } else {
+                    el.textContent = "Demo link not available";
+                }
+            });
         }
         // =========================================================
 
@@ -2932,30 +3093,8 @@
         }
     </script>
 
-<!-- Referral Link Realtime Fix -->
-<script type="module">
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-try{
-  const app = getApp();
-  const db = getDatabase(app);
-  const linkRef = ref(db,"settings/demoLink");
-
-  onValue(linkRef,(snap)=>{
-    const link = snap.val();
-    if(!link) return;
-
-    const el = document.getElementById("myReferralLinkEl");
-    if(el){
-        el.textContent = link;
-        if(el.tagName === "A"){ el.href = link; }
-    }
-  });
-}catch(e){
-  console.log("Referral realtime listener error:",e);
-}
-</script>
 
 </body>
 </html>
+
