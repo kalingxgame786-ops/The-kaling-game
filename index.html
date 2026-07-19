@@ -1156,6 +1156,264 @@
         .fs-summary-value { font-size: 1.1rem; color: white; font-weight: 800; margin-top: 2px; }
         .btn-fs-next { flex: 1; max-width: 160px; margin-left: 16px; }
         .btn-fs-next:disabled { background: rgba(255,255,255,0.1); color: var(--text-dim); box-shadow: none; cursor: not-allowed; transform: none; }
+
+        /* ══════════════════════════════════════════
+           AUTH UPGRADES — Toast, Toggle, Strength, Errors, Spinner, Success
+        ══════════════════════════════════════════ */
+
+        /* ── MODERN TOAST ── */
+        .auth-toast-container {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 92%;
+            max-width: 420px;
+            pointer-events: none;
+        }
+        .auth-toast {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            border-radius: var(--r-md);
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            animation: toastIn 0.35s cubic-bezier(.22,.68,0,1.2);
+            pointer-events: auto;
+        }
+        .auth-toast i { font-size: 1.2rem; flex-shrink: 0; }
+        .auth-toast.success { background: rgba(16,185,129,0.95); }
+        .auth-toast.error   { background: rgba(229,52,61,0.95); }
+        .auth-toast.info    { background: rgba(79,70,229,0.95); }
+        .auth-toast.toast-out { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastIn  { from { opacity: 0; transform: translateY(-22px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-22px); } }
+
+        /* ── PASSWORD WRAPPER + TOGGLE ── */
+        .pwd-wrapper { position: relative; }
+        .pwd-wrapper .form-control { padding-right: 44px; }
+        .pwd-toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            padding: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.18s;
+        }
+        .pwd-toggle-btn:hover { color: var(--red); }
+
+        /* ── PASSWORD STRENGTH METER ── */
+        .strength-meter { margin-top: 8px; }
+        .strength-meter.hidden { display: none; }
+        .strength-bar-track {
+            height: 5px;
+            background: rgba(255,255,255,0.08);
+            border-radius: var(--r-full);
+            overflow: hidden;
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: var(--r-full);
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+        .strength-bar.weak   { width: 33%; background: var(--red); }
+        .strength-bar.medium { width: 66%; background: var(--orange); }
+        .strength-bar.strong { width: 100%; background: #10b981; }
+        .strength-label {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+        .strength-label.weak   { color: var(--red); }
+        .strength-label.medium { color: var(--orange); }
+        .strength-label.strong { color: #10b981; }
+
+        /* ── FIELD ERRORS ── */
+        .field-error {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--red);
+            min-height: 1px;
+        }
+        .field-error.empty { display: none; }
+        .form-control.input-error {
+            border-color: var(--red) !important;
+            box-shadow: 0 0 0 3px rgba(229,52,61,0.18) !important;
+        }
+
+        /* ── BUTTON LOADING SPINNER ── */
+        .btn-custom.is-loading {
+            pointer-events: none;
+            opacity: 0.75;
+            position: relative;
+        }
+        .btn-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: btnSpin 0.7s linear infinite;
+        }
+        @keyframes btnSpin { to { transform: rotate(360deg); } }
+
+        /* ── FORGOT PASSWORD LINK ── */
+        .forgot-link {
+            display: block;
+            text-align: right;
+            margin-top: -6px;
+            margin-bottom: 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--red);
+            text-decoration: none;
+        }
+        .forgot-link:hover { opacity: 0.8; }
+
+        /* ── REGISTRATION SUCCESS OVERLAY ── */
+        .reg-success-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10002;
+            background: rgba(13,13,15,0.97);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 32px 24px;
+        }
+        .reg-success-overlay.active {
+            display: flex;
+            animation: fadeUp 0.4s cubic-bezier(.22,.68,0,1.2);
+        }
+        .reg-success-icon {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: var(--grad-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 0 40px var(--red-glow);
+            animation: popIn 0.5s cubic-bezier(.22,.68,0,1.4);
+        }
+        .reg-success-icon i { font-size: 3rem; color: #fff; }
+        @keyframes popIn { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .reg-success-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 10px; }
+        .reg-success-subtitle { font-size: 0.92rem; color: var(--text-muted); font-weight: 600; margin-bottom: 28px; max-width: 320px; line-height: 1.5; }
+        .reg-success-overlay .btn-custom { max-width: 280px; }
+
+        /* ══════════════════════════════════════════
+           GOOGLE SIGN-IN + AUTH UI POLISH
+        ══════════════════════════════════════════ */
+
+        /* ── GOOGLE BUTTON ── */
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            background: #ffffff;
+            color: #1f1f1f;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 12px 20px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: var(--r-md);
+            cursor: pointer;
+            letter-spacing: 0.2px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            transition: transform 0.2s cubic-bezier(.22,.68,0,1.2), box-shadow 0.2s, background 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-google:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+            background: #f7f7f7;
+        }
+        .btn-google:active { transform: scale(0.97); }
+        .btn-google:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66,133,244,0.45);
+        }
+        .btn-google .google-logo {
+            width: 20px; height: 20px;
+            flex-shrink: 0;
+        }
+        .btn-google.is-loading {
+            pointer-events: none;
+            opacity: 0.75;
+        }
+        .btn-google .btn-spinner {
+            border: 2px solid rgba(31,31,31,0.3);
+            border-top-color: #1f1f1f;
+        }
+
+        /* ── "OR" DIVIDER ── */
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 18px 0 14px;
+            color: var(--text-muted);
+        }
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .auth-divider span {
+            padding: 0 14px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* ── FORM ENTRANCE ANIMATION ── */
+        .auth-form-anim {
+            animation: authFormIn 0.35s cubic-bezier(.22,.68,0,1.2);
+        }
+        @keyframes authFormIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── BUTTON SMOOTHNESS (polish, no rewrite) ── */
+        .btn-custom, .social-btn { transition: all 0.2s cubic-bezier(.22,.68,0,1.2); }
     </style>
 </head>
 
@@ -1278,19 +1536,24 @@
             </div>
             
             <div class="glass-card">
-                <form id="emailLoginForm">
-                    <div class="mb-3"><label class="form-label">Email Address</label><input type="email" class="form-control" id="loginEmailInputEl" placeholder="player@email.com" required></div>
-                    <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="loginPasswordInputEl" placeholder="••••••••" required></div>
+                <form id="emailLoginForm" class="auth-form-anim">
+                    <div class="mb-3"><label class="form-label">Email Address</label><input type="email" class="form-control" id="loginEmailInputEl" placeholder="player@email.com" autocomplete="email" required><span class="field-error empty" id="loginEmailErrorEl"></span></div>
+                    <div class="mb-3"><label class="form-label">Password</label><div class="pwd-wrapper"><input type="password" class="form-control" id="loginPasswordInputEl" placeholder="••••••••" autocomplete="current-password" required><button type="button" class="pwd-toggle-btn" data-target="loginPasswordInputEl" aria-label="Show password"><i class="bi bi-eye-slash"></i></button></div><span class="field-error empty" id="loginPasswordErrorEl"></span><a href="#" class="forgot-link" id="forgotPasswordLinkEl">Forgot Password?</a></div>
                     <div id="loginStatusMessageEl" style="display: none;"></div>
                     <button type="button" class="btn-custom btn-primary-gradient mt-2 mb-3" id="loginEmailBtnEl">Secure Login</button>
-                    <hr class="my-3" style="border-color: var(--border-glass);">
+                    <div class="auth-divider"><span>OR</span></div>
+                    <button type="button" class="btn-google mb-3" id="googleLoginBtnEl" aria-label="Continue with Google">
+                        <svg class="google-logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                        <span>Continue with Google</span>
+                    </button>
                     <button type="button" class="btn-custom btn-outline-custom" id="showSignupToggleBtnEl">Create New Account</button>
                 </form>
 
-                <form id="emailSignupForm" style="display: none;">
-                    <div class="mb-3"><label class="form-label">In-Game Name</label><input type="text" class="form-control" id="signupNameInputEl" placeholder="Your Game Name" required></div>
-                    <div class="mb-3"><label class="form-label">Email Address</label><input type="email" class="form-control" id="signupEmailInputEl" placeholder="Your Gamil Id" required></div>
-                    <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="signupPasswordInputEl" placeholder="Min 6 characters" required minlength="6"></div>
+                <form id="emailSignupForm" class="auth-form-anim" style="display: none;">
+                    <div class="mb-3"><label class="form-label">In-Game Name</label><input type="text" class="form-control" id="signupNameInputEl" placeholder="Your Game Name" autocomplete="off" required><span class="field-error empty" id="signupNameErrorEl"></span></div>
+                    <div class="mb-3"><label class="form-label">Email Address</label><input type="email" class="form-control" id="signupEmailInputEl" placeholder="Your Gmail ID" autocomplete="email" required><span class="field-error empty" id="signupEmailErrorEl"></span></div>
+                    <div class="mb-3"><label class="form-label">Password</label><div class="pwd-wrapper"><input type="password" class="form-control" id="signupPasswordInputEl" placeholder="Min 8 characters" autocomplete="new-password" required><button type="button" class="pwd-toggle-btn" data-target="signupPasswordInputEl" aria-label="Show password"><i class="bi bi-eye-slash"></i></button></div><div class="strength-meter hidden" id="strengthMeterEl"><div class="strength-bar-track"><div class="strength-bar" id="strengthBarEl"></div></div><span class="strength-label" id="strengthLabelEl"></span></div><span class="field-error empty" id="signupPasswordErrorEl"></span></div>
+                    <div class="mb-3"><label class="form-label">Confirm Password</label><div class="pwd-wrapper"><input type="password" class="form-control" id="signupConfirmPasswordInputEl" placeholder="Re-enter password" autocomplete="new-password" required><button type="button" class="pwd-toggle-btn" data-target="signupConfirmPasswordInputEl" aria-label="Show password"><i class="bi bi-eye-slash"></i></button></div><span class="field-error empty" id="signupConfirmErrorEl"></span></div>
                     <div class="mb-3"><label class="form-label">Invite Code (Optional)</label><input type="text" class="form-control" id="signupReferralCodeInputEl" placeholder="Referral Code"></div>
                     <div id="signupStatusMessageEl" style="display: none;"></div>
                     <button type="button" class="btn-custom btn-primary-gradient mt-2 mb-3" id="signupEmailBtnEl">Register Account</button>
@@ -1555,6 +1818,38 @@
 
     </main>
 
+    <!-- ================= AUTH UPGRADES — Toast Container ================= -->
+    <div id="authToastContainerEl" class="auth-toast-container"></div>
+
+    <!-- ================= REGISTRATION SUCCESS OVERLAY ================= -->
+    <div id="regSuccessOverlayEl" class="reg-success-overlay">
+        <div class="reg-success-icon"><i class="bi bi-check-lg"></i></div>
+        <h3 class="reg-success-title">Registration Successful!</h3>
+        <p class="reg-success-subtitle">Your account has been created. Please log in with your new credentials to continue.</p>
+        <button type="button" class="btn-custom btn-primary-gradient" id="regSuccessContinueBtnEl">Go to Login</button>
+    </div>
+
+    <!-- ================= FORGOT PASSWORD MODAL ================= -->
+    <div class="modal fade" id="forgotPasswordModalEl" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-key-fill me-2" style="color: var(--red);"></i> Reset Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">Enter your registered email address. We'll send you a password reset link.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="forgotEmailInputEl" placeholder="player@email.com" autocomplete="email">
+                    </div>
+                    <div id="forgotPasswordStatusEl" style="display: none;"></div>
+                    <button type="button" class="btn-custom btn-primary-gradient w-100 mt-2" id="forgotSubmitBtnEl">Send Reset Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sleek Bottom Navigation -->
     <nav class="bottom-nav">
         <button class="nav-item active" data-section="home-section"><i class="bi bi-house-door-fill"></i><span>Home</span></button>
@@ -1794,9 +2089,9 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getDatabase, ref, get, set, update, push, query, orderByChild, equalTo, onValue, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-        import { getAuth, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
         const firebaseConfig = {
   apiKey: "AIzaSyBz2EQwxcMTu8AsmL0sBZqj0mo2zeZRoS8",
@@ -1812,7 +2107,155 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
+        // Resolve any pending redirect sign-in (Google redirect fallback on mobile/webview).
+        // Wrapped so it never blocks boot; onAuthStateChanged handles the resulting session.
+        getRedirectResult(auth).catch(e => { if (e && e.code !== 'auth/no-auth-event') showToast(mapAuthError(e), 'error'); });
+        // Secondary Firebase app instance — used ONLY for signup so that account creation
+        // does NOT establish a session on the main `auth` (which would fire onAuthStateChanged
+        // and auto-login the user). Same pattern as Admin.html. Main auth/onAuthStateChanged
+        // remain completely untouched.
+        const secondaryApp = getApps().length > 1 ? getApps().find(a => a.name === "Secondary") || initializeApp(firebaseConfig, "Secondary") : initializeApp(firebaseConfig, "Secondary");
+        const secondaryAuth = getAuth(secondaryApp);
+        // Realtime Database bound to the SECONDARY app. Post-creation writes inside the
+        // signup handler must authenticate as the newly-created user (signed in on
+        // secondaryAuth). Writing through the main `db` fails with PERMISSION_DENIED
+        // because the main auth.currentUser is null during signup.
+        const secondaryDb = getDatabase(secondaryApp);
         const getEl = (id) => document.getElementById(id);
+
+        /* ════════════════════════════════════════════════════════════════
+           AUTH UPGRADES — Utilities
+           Toast, button loading, field errors, validators, error mapper.
+           All self-contained — touch no existing logic.
+        ════════════════════════════════════════════════════════════════ */
+
+        // ── Modern Toast (replaces alert) ──
+        function showToast(message, type = 'info', duration = 3500) {
+            const container = getEl('authToastContainerEl');
+            if (!container) { alert(message); return; }
+            const icon = type === 'success' ? 'bi-check-circle-fill'
+                       : type === 'error'   ? 'bi-exclamation-triangle-fill'
+                       : 'bi-info-circle-fill';
+            const toast = document.createElement('div');
+            toast.className = `auth-toast ${type}`;
+            toast.innerHTML = `<i class="bi ${icon}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('toast-out');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ── Button Loading State (disables + spinner + prevents double-click) ──
+        // Stores the original label so it can be restored exactly.
+        function setBtnLoading(btn, loading, loadingText = 'Please wait...') {
+            if (!btn) return;
+            if (loading) {
+                if (btn.dataset.loading === 'true') return; // already loading
+                btn.dataset.loading = 'true';
+                btn.dataset.originalHtml = btn.innerHTML;
+                btn.classList.add('is-loading');
+                btn.disabled = true;
+                btn.innerHTML = `<span class="btn-spinner"></span> ${loadingText}`;
+            } else {
+                btn.classList.remove('is-loading');
+                btn.disabled = false;
+                if (btn.dataset.originalHtml !== undefined) {
+                    btn.innerHTML = btn.dataset.originalHtml;
+                    delete btn.dataset.originalHtml;
+                }
+                delete btn.dataset.loading;
+            }
+        }
+        function isBtnLoading(btn) { return btn && btn.dataset.loading === 'true'; }
+
+        // ── Field Error Helpers ──
+        function setFieldError(inputEl, errorEl, msg) {
+            if (!inputEl || !errorEl) return;
+            if (msg) {
+                inputEl.classList.add('input-error');
+                errorEl.textContent = msg;
+                errorEl.classList.remove('empty');
+            } else {
+                inputEl.classList.remove('input-error');
+                errorEl.textContent = '';
+                errorEl.classList.add('empty');
+            }
+        }
+
+        // ── Validators ──
+        // Returns error string (empty if valid).
+        function validateEmail(email) {
+            if (!email) return 'Email is required.';
+            // Pragmatic RFC-5322-ish pattern, rejects spaces and common typos.
+            const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!re.test(email)) return 'Enter a valid email address.';
+            return '';
+        }
+        function validateDisplayName(name) {
+            if (!name) return 'Display name is required.';
+            if (name.length < 3) return 'Must be at least 3 characters.';
+            if (name.length > 25) return 'Cannot exceed 25 characters.';
+            if (/^\s+$/.test(name)) return 'Cannot be only spaces.';
+            if (/\d/.test(name)) return 'Numbers are not allowed.';
+            if (/[^a-zA-Z\s]/.test(name)) return 'Symbols are not allowed.';
+            return '';
+        }
+        // Password rules: min 8 chars, ≥1 uppercase, ≥1 lowercase, ≥1 number.
+        function validatePassword(pw) {
+            if (!pw) return 'Password is required.';
+            if (pw.length < 8) return 'Password must be at least 8 characters.';
+            if (!/[A-Z]/.test(pw)) return 'Must contain at least one uppercase letter.';
+            if (!/[a-z]/.test(pw)) return 'Must contain at least one lowercase letter.';
+            if (!/[0-9]/.test(pw)) return 'Must contain at least one number.';
+            return '';
+        }
+        // Returns { score: 'weak'|'medium'|'strong'|'', label, pct }
+        function passwordStrength(pw) {
+            if (!pw) return { score: '', label: '', pct: 0 };
+            let pts = 0;
+            if (pw.length >= 8) pts++;
+            if (pw.length >= 12) pts++;
+            if (/[A-Z]/.test(pw)) pts++;
+            if (/[a-z]/.test(pw)) pts++;
+            if (/[0-9]/.test(pw)) pts++;
+            if (/[^A-Za-z0-9]/.test(pw)) pts++;
+            let score, label;
+            if (pts <= 2)      { score = 'weak';   label = 'Weak'; }
+            else if (pts <= 4) { score = 'medium'; label = 'Medium'; }
+            else               { score = 'strong'; label = 'Strong'; }
+            return { score, label, pct: pts };
+        }
+
+        // ── Firebase Error Code Mapper ──
+        // Converts raw Firebase auth errors into friendly messages.
+        function mapAuthError(err) {
+            const code = (err && err.code) ? err.code : '';
+            const map = {
+                'auth/invalid-email': 'That email address is not valid.',
+                'auth/user-disabled': 'This account has been disabled.',
+                'auth/user-not-found': 'No account found with this email.',
+                'auth/wrong-password': 'Incorrect password. Please try again.',
+                'auth/invalid-credential': 'Invalid email or password.',
+                'auth/email-already-in-use': 'An account with this email already exists.',
+                'auth/weak-password': 'Password is too weak. Use 8+ chars with letters & numbers.',
+                'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
+                'auth/network-request-failed': 'Network error. Check your internet connection.',
+                'auth/operation-not-allowed': 'This sign-in method is not enabled.',
+                'auth/internal-error': 'Something went wrong. Please try again.',
+                'auth/timeout': 'The request timed out. Please try again.',
+                'permission-denied': 'Database permission denied. Please contact support.',
+                'auth/popup-closed-by-user': 'Google sign-in cancelled.',
+                'auth/cancelled-popup-request': 'Google sign-in cancelled.',
+                'auth/popup-blocked': 'Google popup was blocked. Redirecting...',
+                'auth/popup-request-blocked': 'Google popup was blocked. Redirecting...',
+                'auth/operation-not-supported-in-this-environment': 'This browser requires redirect sign-in. Redirecting...',
+                'auth/unauthorized-domain': 'This domain is not authorized for Google sign-in. Contact support.',
+                'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.'
+            };
+            return map[code] || (err && err.message ? err.message : 'Something went wrong. Please try again.');
+        }
+
 
         // --- Referral Click & Install Tracking ---
         function trackReferralClick() {
@@ -2047,11 +2490,63 @@
                 getEl('notificationBtnEl').style.display = 'flex';
                 const uRef = ref(db, 'users/' + user.uid);
                 const snap = await get(uRef);
-                if (snap.exists()) { userProfile = snap.val(); } 
+                if (snap.exists()) { userProfile = snap.val(); }
                 else {
-                    const sBonus = appSettings.signupBonus ?? 10;
-                    userProfile = { uid: user.uid, displayName: user.email?.split('@')[0], email: user.email, balance: sBonus, winningCash: 0, bonusCash: sBonus, joinedTournaments: {}, createdAt: serverTimestamp(), status: 'active' };
+                    // New user — schema depends on sign-in provider.
+                    // Also covers the "Auth exists but DB profile missing" recovery case:
+                    // any authenticated user without a profile record is created here.
+                    const isGoogleUser = Array.isArray(user.providerData) && user.providerData.some(p => p.providerId === 'google.com');
+
+                    if (isGoogleUser) {
+                        // Google new-user schema (per spec): wallet=0, bonusCash=0, photoURL, provider=google.
+                        // Field name is `balance` (the field updateUIForUser reads) mapping the spec's `wallet`.
+                        userProfile = {
+                            uid: user.uid,
+                            displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'Player'),
+                            email: user.email || '',
+                            photoURL: user.photoURL || '',
+                            provider: 'google',
+                            balance: 0,
+                            winningCash: 0,
+                            bonusCash: 0,
+                            joinedTournaments: {},
+                            createdAt: serverTimestamp(),
+                            status: 'active'
+                        };
+                    } else {
+                        // Email new-user schema (unchanged — preserves signup-bonus behavior).
+                        const sBonus = appSettings.signupBonus ?? 10;
+                        userProfile = { uid: user.uid, displayName: user.email?.split('@')[0], email: user.email, balance: sBonus, winningCash: 0, bonusCash: sBonus, joinedTournaments: {}, createdAt: serverTimestamp(), status: 'active' };
+                    }
                     await set(uRef, userProfile);
+
+                    // Referral flow for NEW Google users — IDENTICAL to email signup.
+                    // Same paths, same fields, same approval flow. No separate system.
+                    if (isGoogleUser) {
+                        let refCode = localStorage.getItem('pendingReferralUid') || "";
+                        if (refCode && refCode !== user.uid) {
+                            const referrerSnap = await get(ref(db, `users/${refCode}`));
+                            if (referrerSnap.exists()) {
+                                const referrerData = referrerSnap.val();
+                                if (referrerData.status !== 'banned') {
+                                    await set(ref(db, `pendingReferrals/${user.uid}`), {
+                                        referrerUid: refCode,
+                                        referredEmail: user.email || '',
+                                        referredUid: user.uid,
+                                        status: 'pending',
+                                        reward: appSettings.referralBonus || 0,
+                                        timestamp: serverTimestamp()
+                                    });
+                                    await push(ref(db, `users/${refCode}/notifications`), {
+                                        title: 'New Referral Signup',
+                                        message: `Signup detected from ${user.email || 'a Google user'}. Awaiting admin approval.`,
+                                        timestamp: serverTimestamp()
+                                    });
+                                }
+                            }
+                        }
+                        localStorage.removeItem('pendingReferralUid');
+                    }
                 }
                 updateUIForUser();
                 onValue(uRef, s => { if(s.exists()){ userProfile = s.val(); updateUIForUser(); } });
@@ -2069,38 +2564,106 @@
         });
 
         getEl('loginEmailBtnEl').onclick = async () => {
-            showLoader(true);
-            try { await signInWithEmailAndPassword(auth, getEl('loginEmailInputEl').value, getEl('loginPasswordInputEl').value); } 
-            catch (e) { alert("Login failed. Check email or password."); } finally { showLoader(false); }
+            const btn = getEl('loginEmailBtnEl');
+            if (isBtnLoading(btn)) return; // Prevent multiple clicks
+
+            const emailInput = getEl('loginEmailInputEl');
+            const pwInput = getEl('loginPasswordInputEl');
+            const emailErr = getEl('loginEmailErrorEl');
+            const pwErr = getEl('loginPasswordErrorEl');
+
+            // Trim inputs (never trust raw input)
+            const email = emailInput.value.trim();
+            const pw = pwInput.value;
+
+            // Validate before touching Firebase
+            const emailMsg = validateEmail(email);
+            setFieldError(emailInput, emailErr, emailMsg);
+            const pwMsg = pw ? '' : 'Password is required.';
+            setFieldError(pwInput, pwErr, pwMsg);
+            if (emailMsg || pwMsg) {
+                showToast('Please fix the highlighted fields.', 'error');
+                return;
+            }
+
+            setBtnLoading(btn, true, 'Logging in...');
+            try {
+                await signInWithEmailAndPassword(auth, email, pw);
+                // onAuthStateChanged handles the rest (unchanged).
+            } catch (e) {
+                showToast(mapAuthError(e), 'error');
+            } finally {
+                setBtnLoading(btn, false);
+            }
         };
 
         getEl('signupEmailBtnEl').onclick = async () => {
-            const name = getEl('signupNameInputEl').value, em = getEl('signupEmailInputEl').value, pw = getEl('signupPasswordInputEl').value;
-            if(!name || pw.length<6) return alert('Enter name and min 6 char password.');
-            showLoader(true);
-            try { 
-                const cred = await createUserWithEmailAndPassword(auth, em, pw); 
-                await update(ref(db, `users/${cred.user.uid}`), { displayName: name, status: 'active' });
-                
-                let refCode = getEl('signupReferralCodeInputEl').value.trim();
+            const btn = getEl('signupEmailBtnEl');
+            if (isBtnLoading(btn)) return; // Prevent multiple clicks
+
+            const nameInput = getEl('signupNameInputEl');
+            const emailInput = getEl('signupEmailInputEl');
+            const pwInput = getEl('signupPasswordInputEl');
+            const confirmInput = getEl('signupConfirmPasswordInputEl');
+            const refInput = getEl('signupReferralCodeInputEl');
+
+            const nameErr = getEl('signupNameErrorEl');
+            const emailErr = getEl('signupEmailErrorEl');
+            const pwErr = getEl('signupPasswordErrorEl');
+            const confirmErr = getEl('signupConfirmErrorEl');
+
+            // Trim all inputs
+            const name = nameInput.value.trim();
+            const em = emailInput.value.trim();
+            const pw = pwInput.value;
+            const confirmPw = confirmInput.value;
+
+            // Validate every field
+            const nameMsg = validateDisplayName(name);
+            setFieldError(nameInput, nameErr, nameMsg);
+
+            const emailMsg = validateEmail(em);
+            setFieldError(emailInput, emailErr, emailMsg);
+
+            const pwMsg = validatePassword(pw);
+            setFieldError(pwInput, pwErr, pwMsg);
+
+            const confirmMsg = (!confirmPw) ? 'Please confirm your password.'
+                              : (confirmPw !== pw) ? 'Passwords do not match.'
+                              : '';
+            setFieldError(confirmInput, confirmErr, confirmMsg);
+
+            if (nameMsg || emailMsg || pwMsg || confirmMsg) {
+                showToast('Please fix the highlighted fields.', 'error');
+                return;
+            }
+
+            setBtnLoading(btn, true, 'Creating account...');
+            try {
+                // Use SECONDARY auth instance so the main session (and onAuthStateChanged)
+                // is never touched — no auto-login occurs.
+                const cred = await createUserWithEmailAndPassword(secondaryAuth, em, pw);
+                await update(ref(secondaryDb, `users/${cred.user.uid}`), { displayName: name, status: 'active' });
+
+                let refCode = refInput.value.trim();
                 if (!refCode) {
                     refCode = localStorage.getItem('pendingReferralUid') || "";
                 }
-                
+
                 if(refCode && refCode !== cred.user.uid) {
-                    const referrerSnap = await get(ref(db, `users/${refCode}`));
+                    const referrerSnap = await get(ref(secondaryDb, `users/${refCode}`));
                     if (referrerSnap.exists()) {
                         const referrerData = referrerSnap.val();
                         if (referrerData.status !== 'banned') {
-                            await set(ref(db, `pendingReferrals/${cred.user.uid}`), {
-                                referrerUid: refCode, 
+                            await set(ref(secondaryDb, `pendingReferrals/${cred.user.uid}`), {
+                                referrerUid: refCode,
                                 referredEmail: em,
                                 referredUid: cred.user.uid,
-                                status: 'pending', 
+                                status: 'pending',
                                 reward: appSettings.referralBonus || 0,
                                 timestamp: serverTimestamp()
                             });
-                            await push(ref(db, `users/${refCode}/notifications`), {
+                            await push(ref(secondaryDb, `users/${refCode}/notifications`), {
                                 title: 'New Referral Signup',
                                 message: `Signup detected from ${em}. Awaiting admin approval.`,
                                 timestamp: serverTimestamp()
@@ -2109,12 +2672,206 @@
                     }
                 }
                 localStorage.removeItem('pendingReferralUid');
-            } catch (e) { alert(e.message); } finally { showLoader(false); }
+
+                // Always sign out the SECONDARY session so the account exists but is NOT logged in.
+                try { await signOut(secondaryAuth); } catch (_) {}
+
+                // Show success screen instead of auto-logging in.
+                getEl('regSuccessOverlayEl').classList.add('active');
+                showToast('Account created successfully!', 'success');
+            } catch (e) {
+                showToast(mapAuthError(e), 'error');
+            } finally {
+                setBtnLoading(btn, false);
+            }
         };
 
         getEl('showSignupToggleBtnEl').onclick = () => { getEl('emailLoginForm').style.display='none'; getEl('emailSignupForm').style.display='block'; };
         getEl('showLoginToggleBtnEl').onclick = () => { getEl('emailLoginForm').style.display='block'; getEl('emailSignupForm').style.display='none'; };
         getEl('logoutProfileBtnEl').onclick = () => signOut(auth);
+
+        /* ════════════════════════════════════════════════════════════════
+           GOOGLE SIGN-IN
+           Provider + handler. Popup first, automatic redirect fallback for
+           mobile / in-webview environments where popups are blocked.
+           Profile creation + referral handling live in onAuthStateChanged
+           (single source of truth, shared with email signup).
+        ════════════════════════════════════════════════════════════════ */
+
+        const googleProvider = new GoogleAuthProvider();
+        // Always show the account picker, even if only one Google account is signed in.
+        googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+        getEl('googleLoginBtnEl').onclick = async () => {
+            const btn = getEl('googleLoginBtnEl');
+            if (isBtnLoading(btn)) return; // Prevent double-click
+
+            setBtnLoading(btn, true, 'Connecting...');
+            try {
+                // Primary path: popup (desktop / modern mobile browsers).
+                await signInWithPopup(auth, googleProvider);
+                // onAuthStateChanged handles profile create-or-load + go home.
+            } catch (e) {
+                const code = (e && e.code) || '';
+
+                // User cancelled — not an error, just inform and re-enable.
+                if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+                    showToast('Google sign-in cancelled.', 'info');
+                    return;
+                }
+
+                // Popup blocked or unsupported environment → redirect fallback (mobile / webview).
+                if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment' || code === 'auth/popup-request-blocked') {
+                    try {
+                        showToast('Opening Google sign-in...', 'info');
+                        await signInWithRedirect(auth, googleProvider);
+                        // Page will reload; getRedirectResult() on boot + onAuthStateChanged finish the flow.
+                        return;
+                    } catch (re) {
+                        showToast(mapAuthError(re), 'error');
+                        return;
+                    }
+                }
+
+                // Any other error → friendly mapped message.
+                showToast(mapAuthError(e), 'error');
+            } finally {
+                setBtnLoading(btn, false);
+            }
+        };
+
+        /* ════════════════════════════════════════════════════════════════
+           AUTH UPGRADES — Listeners
+           Toggle password visibility, live validation, strength meter,
+           forgot-password, registration success continue.
+           No existing logic modified.
+        ════════════════════════════════════════════════════════════════ */
+
+        // ── Password Show/Hide (delegated for all .pwd-toggle-btn) ──
+        document.addEventListener('click', (e) => {
+            const toggleBtn = e.target.closest('.pwd-toggle-btn');
+            if (!toggleBtn) return;
+            const input = getEl(toggleBtn.dataset.target);
+            if (!input) return;
+            const icon = toggleBtn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) { icon.classList.remove('bi-eye-slash'); icon.classList.add('bi-eye'); }
+                toggleBtn.setAttribute('aria-label', 'Hide password');
+            } else {
+                input.type = 'password';
+                if (icon) { icon.classList.remove('bi-eye'); icon.classList.add('bi-eye-slash'); }
+                toggleBtn.setAttribute('aria-label', 'Show password');
+            }
+        });
+
+        // ── Live Validation: Login ──
+        getEl('loginEmailInputEl').addEventListener('input', () => {
+            const v = getEl('loginEmailInputEl').value.trim();
+            setFieldError(getEl('loginEmailInputEl'), getEl('loginEmailErrorEl'), v ? validateEmail(v) : '');
+        });
+        getEl('loginPasswordInputEl').addEventListener('input', () => {
+            setFieldError(getEl('loginPasswordInputEl'), getEl('loginPasswordErrorEl'), '');
+        });
+
+        // ── Live Validation + Strength Meter: Signup ──
+        function updateSignupStrength() {
+            const pw = getEl('signupPasswordInputEl').value;
+            const meter = getEl('strengthMeterEl');
+            const bar = getEl('strengthBarEl');
+            const label = getEl('strengthLabelEl');
+            if (!pw) {
+                meter.classList.add('hidden');
+                bar.className = 'strength-bar';
+                label.textContent = '';
+                label.className = 'strength-label';
+                return;
+            }
+            meter.classList.remove('hidden');
+            const s = passwordStrength(pw);
+            bar.className = 'strength-bar ' + s.score;
+            label.textContent = 'Password strength: ' + s.label;
+            label.className = 'strength-label ' + s.score;
+        }
+        getEl('signupNameInputEl').addEventListener('input', () => {
+            const v = getEl('signupNameInputEl').value.trim();
+            setFieldError(getEl('signupNameInputEl'), getEl('signupNameErrorEl'), v ? validateDisplayName(v) : '');
+        });
+        getEl('signupEmailInputEl').addEventListener('input', () => {
+            const v = getEl('signupEmailInputEl').value.trim();
+            setFieldError(getEl('signupEmailInputEl'), getEl('signupEmailErrorEl'), v ? validateEmail(v) : '');
+        });
+        getEl('signupPasswordInputEl').addEventListener('input', () => {
+            const v = getEl('signupPasswordInputEl').value;
+            setFieldError(getEl('signupPasswordInputEl'), getEl('signupPasswordErrorEl'), v ? validatePassword(v) : '');
+            updateSignupStrength();
+            // Re-validate confirm if it has a value
+            const cv = getEl('signupConfirmPasswordInputEl').value;
+            if (cv) {
+                const cMsg = (cv !== v) ? 'Passwords do not match.' : '';
+                setFieldError(getEl('signupConfirmPasswordInputEl'), getEl('signupConfirmErrorEl'), cMsg);
+            }
+        });
+        getEl('signupConfirmPasswordInputEl').addEventListener('input', () => {
+            const cv = getEl('signupConfirmPasswordInputEl').value;
+            const v = getEl('signupPasswordInputEl').value;
+            const cMsg = (!cv) ? '' : (cv !== v) ? 'Passwords do not match.' : '';
+            setFieldError(getEl('signupConfirmPasswordInputEl'), getEl('signupConfirmErrorEl'), cMsg);
+        });
+
+        // ── Forgot Password ──
+        const forgotModal = new bootstrap.Modal(getEl('forgotPasswordModalEl'));
+        getEl('forgotPasswordLinkEl').onclick = (e) => {
+            e.preventDefault();
+            // Pre-fill with login email if present
+            const loginEmail = getEl('loginEmailInputEl').value.trim();
+            if (loginEmail) getEl('forgotEmailInputEl').value = loginEmail;
+            getEl('forgotPasswordStatusEl').style.display = 'none';
+            forgotModal.show();
+        };
+        getEl('forgotSubmitBtnEl').onclick = async () => {
+            const btn = getEl('forgotSubmitBtnEl');
+            if (isBtnLoading(btn)) return;
+            const input = getEl('forgotEmailInputEl');
+            const status = getEl('forgotPasswordStatusEl');
+            const email = input.value.trim();
+            const msg = validateEmail(email);
+            if (msg) {
+                status.style.display = 'block';
+                status.className = 'alert alert-danger py-2 px-3 small fw-bold mt-2';
+                status.textContent = msg;
+                return;
+            }
+            setBtnLoading(btn, true, 'Sending...');
+            try {
+                await sendPasswordResetEmail(auth, email);
+                forgotModal.hide();
+                showToast('Password reset link sent to your email.', 'success');
+                input.value = '';
+            } catch (e) {
+                status.style.display = 'block';
+                status.className = 'alert alert-danger py-2 px-3 small fw-bold mt-2';
+                status.textContent = mapAuthError(e);
+            } finally {
+                setBtnLoading(btn, false);
+            }
+        };
+
+        // ── Registration Success Continue ──
+        getEl('regSuccessContinueBtnEl').onclick = () => {
+            getEl('regSuccessOverlayEl').classList.remove('active');
+            // Switch to login form and clear sensitive fields
+            getEl('emailSignupForm').style.display = 'none';
+            getEl('emailLoginForm').style.display = 'block';
+            getEl('signupPasswordInputEl').value = '';
+            getEl('signupConfirmPasswordInputEl').value = '';
+            getEl('strengthMeterEl').classList.add('hidden');
+            // Pre-fill login email for convenience
+            const signedUpEmail = getEl('signupEmailInputEl').value.trim();
+            if (signedUpEmail) getEl('loginEmailInputEl').value = signedUpEmail;
+            getEl('loginPasswordInputEl').value = '';
+            getEl('loginPasswordInputEl').focus();
+        };
 
         /* --- Global Setup Data --- */
         function listenToAppSettings() {
