@@ -2197,8 +2197,7 @@
             if (name.length < 3) return 'Must be at least 3 characters.';
             if (name.length > 25) return 'Cannot exceed 25 characters.';
             if (/^\s+$/.test(name)) return 'Cannot be only spaces.';
-            if (/\d/.test(name)) return 'Numbers are not allowed.';
-            if (/[^a-zA-Z\s]/.test(name)) return 'Symbols are not allowed.';
+            if (/[^a-zA-Z0-9\s]/.test(name)) return 'Symbols are not allowed.';
             return '';
         }
         // Password rules: min 8 chars, ≥1 uppercase, ≥1 lowercase, ≥1 number.
@@ -2237,6 +2236,7 @@
                 'auth/user-not-found': 'No account found with this email.',
                 'auth/wrong-password': 'Incorrect password. Please try again.',
                 'auth/invalid-credential': 'Invalid email or password.',
+                'auth/invalid-login-credentials': 'Invalid email or password.',
                 'auth/email-already-in-use': 'An account with this email already exists.',
                 'auth/weak-password': 'Password is too weak. Use 8+ chars with letters & numbers.',
                 'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
@@ -2582,7 +2582,7 @@
             const pwMsg = pw ? '' : 'Password is required.';
             setFieldError(pwInput, pwErr, pwMsg);
             if (emailMsg || pwMsg) {
-                showToast('Please fix the highlighted fields.', 'error');
+                showToast(emailMsg || pwMsg, 'error');
                 return;
             }
 
@@ -2634,7 +2634,7 @@
             setFieldError(confirmInput, confirmErr, confirmMsg);
 
             if (nameMsg || emailMsg || pwMsg || confirmMsg) {
-                showToast('Please fix the highlighted fields.', 'error');
+                showToast(nameMsg || emailMsg || pwMsg || confirmMsg, 'error');
                 return;
             }
 
