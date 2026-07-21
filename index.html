@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Premium Gaming Platform</title>
 
+    <!-- PWA: Manifest + Mobile meta -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d0d0f">
+    <link rel="apple-touch-icon" href="IMG-20260629-WA0015.jpg">
+    <link rel="icon" type="image/jpeg" href="IMG-20260629-WA0015.jpg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kaling">
+
     <!-- Icons and Modern Font -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -3848,6 +3858,23 @@
                 }); }
             } catch(e) {}
         }
+    </script>
+
+    <!-- PWA: register service worker (static assets only).
+         Feature-detected, runs once after load, never re-registers. -->
+    <script>
+        (function () {
+            if (!('serviceWorker' in navigator)) return;
+            let swRegistered = false;
+            window.addEventListener('load', function () {
+                if (swRegistered) return;
+                swRegistered = true;
+                navigator.serviceWorker.register('service-worker.js')
+                    .catch(function (err) {
+                        console.warn('[PWA] SW registration failed:', err);
+                    });
+            });
+        })();
     </script>
 
 
