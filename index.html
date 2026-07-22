@@ -1794,6 +1794,9 @@
                     <div class="col-6"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Rejected</small><strong class="text-danger fs-5" id="refRejectedEl">0</strong></div></div>
                     <div class="col-12"><div class="bg-black p-2 rounded text-center border border-secondary"><small class="text-muted d-block fw-bold text-uppercase" style="font-size:0.7rem;">Total Payout</small><strong class="text-success fs-4" id="refPayoutEl">₹0</strong></div></div>
                 </div>
+                <p class="text-muted small fw-bold mb-2">Your Referral Code</p>
+                <div class="bg-black p-3 rounded text-white fw-bold fs-5 mb-2 text-center border border-secondary" style="letter-spacing: 2px;" id="myReferralCodeEl">Generating...</div>
+                <button class="btn-custom btn-primary-gradient w-100 copy-btn mb-3" data-target="#myReferralCodeEl"><i class="bi bi-clipboard"></i> Copy Code</button>
                 <p class="text-muted small fw-bold mb-2">Your Invite Link</p>
                 <div class="bg-black p-3 rounded text-white fw-bold fs-6 mb-3 border border-secondary" style="word-wrap: break-word;" id="myReferralLinkEl">Generating...</div>
                 <button class="btn-custom btn-primary-gradient w-100 copy-btn" data-target="#myReferralLinkEl"><i class="bi bi-clipboard"></i> Copy Invite Link</button>
@@ -2101,7 +2104,7 @@
 
     <script type="module">
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getDatabase, ref, get, set, update, push, query, orderByChild, equalTo, onValue, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+        import { getDatabase, ref, get, set, update, push, query, orderByChild, equalTo, onValue, off, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
         import { getAuth, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -2268,20 +2271,101 @@
         }
 
 
+        // =========================================================
+        // 👇 REFERRAL CODE SYSTEM (permanent opaque codes, no public UID) 👇
+        // =========================================================
+        // Per-session guard: ensureReferralCode() runs at most once per auth session.
+        let sessionReferralCodeDone = false;
+        let sessionReferralCode = null;
+
+        // Build a referral code: "AX" prefix + (len-2) chars from A-Z0-9.
+        // Default length 6; length 8 is used as a fallback when 6-char codes collide.
+        function generateReferralCode(len = 6) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let body = '';
+            for (let i = 0; i < (len - 2); i++) {
+                body += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return 'AX' + body;
+        }
+
+        // Resolve/generate the user's permanent referralCode. Runs once per session.
+        // 1) If a code already exists on users/{uid}/referralCode, return it (never overwrite).
+        // 2) Otherwise atomically reserve referralCodes/{code} via transaction, then write
+        //    users/{uid}/referralCode. Retries up to 5 times at 6 chars, then falls back to 8 chars.
+        async function ensureReferralCode(uid, dbInst) {
+            if (sessionReferralCodeDone) return sessionReferralCode;
+            if (!uid) return null;
+
+            // Existing code? Return it without writing anything.
+            const existingSnap = await get(ref(dbInst, `users/${uid}/referralCode`));
+            if (existingSnap.exists() && existingSnap.val()) {
+                sessionReferralCode = existingSnap.val();
+                sessionReferralCodeDone = true;
+                return sessionReferralCode;
+            }
+
+            // Attempt reservation: 5 tries at 6 chars, then 8 chars until reserved.
+            let reservedCode = null;
+            for (let attempt = 0; attempt < 5 && !reservedCode; attempt++) {
+                const len = (attempt < 5) ? 6 : 8;
+                const code = generateReferralCode(len);
+                // Atomic reservation: only commit when the slot is empty.
+                const result = await runTransaction(ref(dbInst, `referralCodes/${code}`), (cur) => {
+                    if (cur) return;           // slot taken -> abort (no write)
+                    return uid;                // slot free -> reserve it
+                });
+                if (result.committed) reservedCode = code;
+            }
+            while (!reservedCode) {
+                // Final fallback: keep trying 8-char codes until one is reserved.
+                const code = generateReferralCode(8);
+                const result = await runTransaction(ref(dbInst, `referralCodes/${code}`), (cur) => {
+                    if (cur) return;
+                    return uid;
+                });
+                if (result.committed) reservedCode = code;
+            }
+
+            // Reservation succeeded -> persist the code on the user profile.
+            await set(ref(dbInst, `users/${uid}/referralCode`), reservedCode);
+            sessionReferralCode = reservedCode;
+            sessionReferralCodeDone = true;
+            return reservedCode;
+        }
+
+        // Single source of truth for resolving any referral identifier to a Firebase UID.
+        // Used by click tracking + both signup paths. No lookup logic is duplicated elsewhere.
+        // Flow: try referralCodes/{UPPER} -> uid; else legacy fallback users/{raw} -> uid.
+        async function resolveReferrerToUid(value, dbInst) {
+            if (!value) return null;
+            const upper = value.toUpperCase();
+            const codeSnap = await get(ref(dbInst, `referralCodes/${upper}`));
+            if (codeSnap.exists()) return codeSnap.val();
+            // Legacy backward-compat: a raw Firebase UID in an old ?ref=<uid> link.
+            const userSnap = await get(ref(dbInst, `users/${value}`));
+            if (userSnap.exists()) return value;
+            return null;
+        }
+        // =========================================================
+
         // --- Referral Click & Install Tracking ---
-        function trackReferralClick() {
+        async function trackReferralClick() {
             const urlParams = new URLSearchParams(window.location.search);
-            const refUid = urlParams.get('ref');
-            
-            if (refUid) {
-                if (!localStorage.getItem('pendingReferralUid')) {
-                    localStorage.setItem('pendingReferralUid', refUid);
-                }
-                const clickFlag = 'has_clicked_ref_' + refUid;
-                if (!localStorage.getItem(clickFlag)) {
-                    localStorage.setItem(clickFlag, 'true');
-                    set(ref(db, `referralClicks/${refUid}/${Date.now()}`), { timestamp: serverTimestamp(), userAgent: navigator.userAgent }).catch(()=>{});
-                }
+            const rawRef = urlParams.get('ref');
+            if (!rawRef) return;
+
+            // Resolve ?ref= (new code OR legacy uid) to a Firebase UID via the single helper.
+            const refUid = await resolveReferrerToUid(rawRef, db);
+            if (!refUid) return; // invalid -> ignore
+
+            if (!localStorage.getItem('pendingReferralUid')) {
+                localStorage.setItem('pendingReferralUid', refUid);
+            }
+            const clickFlag = 'has_clicked_ref_' + refUid;
+            if (!localStorage.getItem(clickFlag)) {
+                localStorage.setItem(clickFlag, 'true');
+                set(ref(db, `referralClicks/${refUid}/${Date.now()}`), { timestamp: serverTimestamp(), userAgent: navigator.userAgent }).catch(()=>{});
             }
         }
         trackReferralClick();
@@ -2492,6 +2576,9 @@
                 referralLinkUnsubscribe();
                 referralLinkUnsubscribe = null;
             }
+            // Reset the per-session referral-code generation guard on logout.
+            sessionReferralCodeDone = false;
+            sessionReferralCode = null;
         }
 
         /* --- Auth Handling --- */
@@ -2534,21 +2621,23 @@
                     // Referral flow for NEW Google users — IDENTICAL to email signup.
                     // Same paths, same fields, same approval flow. No separate system.
                     if (isGoogleUser) {
-                        let refCode = localStorage.getItem('pendingReferralUid') || "";
-                        if (refCode && refCode !== user.uid) {
-                            const referrerSnap = await get(ref(db, `users/${refCode}`));
+                        let entered = localStorage.getItem('pendingReferralUid') || "";
+                        // Single source of truth: resolve code/legacy-uid to a Firebase UID.
+                        let referrerUid = await resolveReferrerToUid(entered, db);
+                        if (referrerUid && referrerUid !== user.uid) {
+                            const referrerSnap = await get(ref(db, `users/${referrerUid}`));
                             if (referrerSnap.exists()) {
                                 const referrerData = referrerSnap.val();
                                 if (referrerData.status !== 'banned') {
                                     await set(ref(db, `pendingReferrals/${user.uid}`), {
-                                        referrerUid: refCode,
+                                        referrerUid: referrerUid,
                                         referredEmail: user.email || '',
                                         referredUid: user.uid,
                                         status: 'pending',
                                         reward: appSettings.referralBonus || 0,
                                         timestamp: serverTimestamp()
                                     });
-                                    await push(ref(db, `users/${refCode}/notifications`), {
+                                    await push(ref(db, `users/${referrerUid}/notifications`), {
                                         title: 'New Referral Signup',
                                         message: `Signup detected from ${user.email || 'a Google user'}. Awaiting admin approval.`,
                                         timestamp: serverTimestamp()
@@ -2656,25 +2745,24 @@
                 const cred = await createUserWithEmailAndPassword(secondaryAuth, em, pw);
                 await update(ref(secondaryDb, `users/${cred.user.uid}`), { displayName: name, status: 'active' });
 
-                let refCode = refInput.value.trim();
-                if (!refCode) {
-                    refCode = localStorage.getItem('pendingReferralUid') || "";
-                }
+                let entered = refInput.value.trim() || localStorage.getItem('pendingReferralUid') || "";
+                // Single source of truth: resolve code/legacy-uid to a Firebase UID.
+                let referrerUid = await resolveReferrerToUid(entered, secondaryDb);
 
-                if(refCode && refCode !== cred.user.uid) {
-                    const referrerSnap = await get(ref(secondaryDb, `users/${refCode}`));
+                if(referrerUid && referrerUid !== cred.user.uid) {
+                    const referrerSnap = await get(ref(secondaryDb, `users/${referrerUid}`));
                     if (referrerSnap.exists()) {
                         const referrerData = referrerSnap.val();
                         if (referrerData.status !== 'banned') {
                             await set(ref(secondaryDb, `pendingReferrals/${cred.user.uid}`), {
-                                referrerUid: refCode,
+                                referrerUid: referrerUid,
                                 referredEmail: em,
                                 referredUid: cred.user.uid,
                                 status: 'pending',
                                 reward: appSettings.referralBonus || 0,
                                 timestamp: serverTimestamp()
                             });
-                            await push(ref(secondaryDb, `users/${refCode}/notifications`), {
+                            await push(ref(secondaryDb, `users/${referrerUid}/notifications`), {
                                 title: 'New Referral Signup',
                                 message: `Signup detected from ${em}. Awaiting admin approval.`,
                                 timestamp: serverTimestamp()
@@ -3808,28 +3896,33 @@
         // 👇 DYNAMIC DEMO / REFERRAL LINK SYSTEM 👇
         // =========================================================
         let referralLinkUnsubscribe = null;
-        function setupReferralSystem() {
+        async function setupReferralSystem() {
             if (!currentUser) return;
+            // Resolve/generate the permanent referral code (once per session).
+            // The Firebase UID is never exposed in the link.
+            const code = await ensureReferralCode(currentUser.uid, db);
             const linkRef = ref(db, 'settings/demoLink');
-            
+
             if (referralLinkUnsubscribe) {
                 referralLinkUnsubscribe();
                 referralLinkUnsubscribe = null;
             }
-            
+
             referralLinkUnsubscribe = onValue(linkRef, (snap) => {
                 let link = snap.val();
                 if (!link) {
                     link = localStorage.getItem('demo_link');
                 }
-                
-                const el = getEl('myReferralLinkEl');
+
+                const linkEl = getEl('myReferralLinkEl');
+                const codeEl = getEl('myReferralCodeEl');
+                if (codeEl) codeEl.textContent = code || '---';
                 if (link && link.trim() !== "") {
                     const separator = link.includes('?') ? '&' : '?';
-                    const myLink = `${link}${separator}ref=${currentUser.uid}`;
-                    el.textContent = myLink;
+                    const myLink = `${link}${separator}ref=${code}`;
+                    linkEl.textContent = myLink;
                 } else {
-                    el.textContent = "Demo link not available";
+                    linkEl.textContent = "Demo link not available";
                 }
             });
         }
