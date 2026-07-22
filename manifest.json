@@ -1,7 +1,7 @@
 {
   "id": "./",
   "name": "Kaling — Premium Gaming Platform",
-  "short_name": "Kaling",
+  "short_name": "Kaling Game",
   "description": "Kaling is a premium gaming platform — join tournaments, book slots, manage your wallet, and earn rewards.",
   "start_url": "./",
   "scope": "./",
@@ -13,22 +13,22 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "IMG-20260629-WA0015.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any"
-    },
-    {
-      "src": "IMG-20260629-WA0015.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "maskable"
-    },
-    {
-      "src": "surive.jpg",
+      "src": "android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "related_applications": [],
